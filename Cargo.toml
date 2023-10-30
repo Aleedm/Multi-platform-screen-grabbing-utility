@@ -1,10 +1,11 @@
 [package]
-name = "progetto_22_23"
+name = "multi_platform_screen_grabbing_utility"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-druid = "0.8.3"
+gtk4 = "0.7.3"
 screenshots = "0.8.4"
+
