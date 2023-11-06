@@ -1,7 +1,7 @@
 mod imp;
 mod screenshot;
-use gtk4 as gtk;
 use gtk::{gio, glib, prelude::*};
+use gtk4 as gtk;
 
 glib::wrapper! {
     pub struct AddWindow(ObjectSubclass<imp::AddWindow>)

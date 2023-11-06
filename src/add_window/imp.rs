@@ -5,7 +5,7 @@ use gtk::{glib, prelude::*, subclass::prelude::*};
 use gtk4 as gtk;
 use std::thread;
 /// The private struct, which can hold widgets and other data.
-#[derive(Debug, Default, gtk::CompositeTemplate)]
+#[derive(Debug, gtk::CompositeTemplate)]
 #[template(file = "add_window.ui")]
 pub struct AddWindow {
     // The #[template_child] attribute tells the CompositeTemplate macro
@@ -18,6 +18,19 @@ pub struct AddWindow {
     pub add_ss: TemplateChild<gtk::Button>,
     #[template_child]
     pub image: TemplateChild<gtk::Image>,
+    pub delay: u64,
+}
+
+impl Default for AddWindow {
+    fn default() -> Self {
+        Self {
+            delay_opt: Default::default(),
+            shortcut: Default::default(),
+            add_ss: Default::default(),
+            image: Default::default(),
+            delay: 6,
+        }
+    }
 }
 
 #[glib::object_subclass]
@@ -48,8 +61,11 @@ impl UtilityCallbacks {}
 impl ObjectImpl for AddWindow {
     fn constructed(&self) {
         self.parent_constructed();
+        //self.delay = 2;
         let window_clone = self.obj().clone();
         let image_clone = self.image.clone();
+        //self.obj().update_timer(0);
+        let delay = self.delay;
 
         // Connect to "clicked" signal of `button`
         self.add_ss.connect_clicked(move |_| {
@@ -57,14 +73,15 @@ impl ObjectImpl for AddWindow {
             window_clone.hide();
             while glib::MainContext::default().iteration(false) {}
             //TODO timer
-            eprintln!("waiting 5 seconds");
-            let five_seconds = Duration::from_secs(5);
+            eprintln!("waiting {:?} seconds", delay);
+            let five_seconds = Duration::from_secs(delay);
             thread::sleep(five_seconds);
-            eprintln!("waited 5 seconds");
+            eprintln!("waited {:?} seconds", delay);
             //image_clone.set_from_pixbuf(Some(&screenshot()));
             screenshot();
             image_clone.set_from_file(Some("./target/prova.png"));
             window_clone.show();
+            window_clone.present();
         });
     }
 }
