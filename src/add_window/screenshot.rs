@@ -13,7 +13,8 @@ pub fn screenshot() -> Pixbuf {
 
     println!("capturer: {:?}", screen);
     let buffer = screen.capture().unwrap();
-    print!("before image_buffer");
+    buffer.save(format!("target/prova.png")).unwrap();
+    print!("Image saved");
     let pixbuf = image_buffer_to_gdk_pixbuf(&buffer).unwrap();
     print!("after");
     pixbuf

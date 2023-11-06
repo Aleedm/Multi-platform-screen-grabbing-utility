@@ -1,5 +1,5 @@
 mod imp;
-mod ss;
+mod screenshot;
 use gtk4 as gtk;
 use gtk::{gio, glib, prelude::*};
 

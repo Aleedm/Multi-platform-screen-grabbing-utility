@@ -1,5 +1,5 @@
 use gtk::{glib, prelude::*, subclass::prelude::*};
-use crate::add_window::ss::screenshot;
+use crate::add_window::screenshot::screenshot;
 use gtk4 as gtk;
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, Default, gtk::CompositeTemplate)]
@@ -53,7 +53,8 @@ impl ObjectImpl for AddWindow {
         // Connect to "clicked" signal of `button`
         self.add_ss.connect_clicked(move |_| {
             eprintln!("Clicked!");
-            image_clone.set_from_pixbuf(Some(&screenshot()));
+           screenshot();
+           image_clone.set_from_file(Some("./target/prova.png"));
         });
     }
 
