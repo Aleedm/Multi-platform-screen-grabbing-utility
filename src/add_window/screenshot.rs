@@ -18,6 +18,9 @@ pub fn screenshot() -> Pixbuf {
     let pixbuf = image_buffer_to_gdk_pixbuf(&buffer).unwrap();
     print!("after");
     pixbuf
+    /*let buffer = screen.capture().unwrap();
+    let pixbuf = image_buffer_to_gdk_pixbuf(&buffer).unwrap();
+    pixbuf*/
 }
 
 fn image_buffer_to_gdk_pixbuf(

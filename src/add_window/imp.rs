@@ -1,6 +1,9 @@
-use gtk::{glib, prelude::*, subclass::prelude::*};
+use std::time::Duration;
+
 use crate::add_window::screenshot::screenshot;
+use gtk::{glib, prelude::*, subclass::prelude::*};
 use gtk4 as gtk;
+use std::thread;
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, Default, gtk::CompositeTemplate)]
 #[template(file = "add_window.ui")]
@@ -14,7 +17,7 @@ pub struct AddWindow {
     #[template_child]
     pub add_ss: TemplateChild<gtk::Button>,
     #[template_child]
-    pub image: TemplateChild<gtk::Image>
+    pub image: TemplateChild<gtk::Image>,
 }
 
 #[glib::object_subclass]
@@ -29,7 +32,7 @@ impl ObjectSubclass for AddWindow {
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
         //UtilityCallbacks::bind_template_callbacks(klass);
-    } 
+    }
 
     // You must call `Widget`'s `init_template()` within `instance_init()`.
     fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -40,25 +43,30 @@ impl ObjectSubclass for AddWindow {
 struct UtilityCallbacks {}
 
 #[gtk::template_callbacks(functions)]
-impl UtilityCallbacks {
-
-} 
+impl UtilityCallbacks {}
 
 impl ObjectImpl for AddWindow {
     fn constructed(&self) {
         self.parent_constructed();
-        
+        let window_clone = self.obj().clone();
         let image_clone = self.image.clone();
 
         // Connect to "clicked" signal of `button`
         self.add_ss.connect_clicked(move |_| {
             eprintln!("Clicked!");
-           screenshot();
-           image_clone.set_from_file(Some("./target/prova.png"));
+            window_clone.hide();
+            while glib::MainContext::default().iteration(false) {}
+            //TODO timer
+            eprintln!("waiting 5 seconds");
+            let five_seconds = Duration::from_secs(5);
+            thread::sleep(five_seconds);
+            eprintln!("waited 5 seconds");
+            //image_clone.set_from_pixbuf(Some(&screenshot()));
+            screenshot();
+            image_clone.set_from_file(Some("./target/prova.png"));
+            window_clone.show();
         });
     }
-
-    
 }
 
 impl WidgetImpl for AddWindow {}
