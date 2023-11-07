@@ -1,7 +1,11 @@
-use std::time::Duration;
+use std::{cell::RefCell, time::Duration};
 
 use crate::add_window::screenshot::screenshot;
-use gtk::{glib, prelude::*, subclass::prelude::*};
+use gtk::{
+    glib::{self},
+    prelude::*,
+    subclass::prelude::*,
+};
 use gtk4 as gtk;
 use std::thread;
 /// The private struct, which can hold widgets and other data.
@@ -18,7 +22,7 @@ pub struct AddWindow {
     pub add_ss: TemplateChild<gtk::Button>,
     #[template_child]
     pub image: TemplateChild<gtk::Image>,
-    pub delay: u64,
+    pub delay: RefCell<u64>,
 }
 
 impl Default for AddWindow {
@@ -28,7 +32,7 @@ impl Default for AddWindow {
             shortcut: Default::default(),
             add_ss: Default::default(),
             image: Default::default(),
-            delay: 6,
+            delay: RefCell::new(2),
         }
     }
 }
@@ -61,14 +65,15 @@ impl UtilityCallbacks {}
 impl ObjectImpl for AddWindow {
     fn constructed(&self) {
         self.parent_constructed();
-        //self.delay = 2;
+        self.obj().setup_menu();
         let window_clone = self.obj().clone();
         let image_clone = self.image.clone();
         //self.obj().update_timer(0);
-        let delay = self.delay;
 
         // Connect to "clicked" signal of `button`
         self.add_ss.connect_clicked(move |_| {
+            let delay = window_clone.get_delay();
+            println!("delay: {}", delay);
             eprintln!("Clicked!");
             window_clone.hide();
             while glib::MainContext::default().iteration(false) {}
