@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.16.0 -->
+<interface>
+  <!-- interface-name add_window.ui -->
+  <template class="MainWindow" parent="GtkApplicationWindow">
+    <property name="default-width">400</property>
+    <property name="default-height">200</property>
+    <property name="title">Screen Grabbing</property>
+
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerbar">
+        <property name="show-title-buttons">True</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+
+        <child>
+          <object class="FirstMenuBar" id="menubar"/>
+        </child>
+
+        <child>
+          <object class="GtkButton" id="add_ss">
+            <property name="action-name">win.new_screen</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">list-add-symbolic</property>
+                    <style>
+                      <class name="title"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">New Screenshot</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkImage" id="image">
+          <property name="hexpand">True</property>
+          <property name="vexpand">True</property>
+          <layout>
+            <property name="column">0</property>
+            <property name="column-span">3</property>
+            <property name="row">2</property>
+          </layout>
+          </object>
+        </child>
+        
+      </object>
+    </child>
+  </template>
+</interface>

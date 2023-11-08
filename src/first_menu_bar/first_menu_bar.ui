@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+
+  <menu id="primary_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Nessun ritardo</attribute>
+        <attribute name="action">win.set_delay</attribute>
+        <attribute name="target" type="t">0</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Ritardo di 3 secondi</attribute>
+        <attribute name="action">win.set_delay</attribute>
+        <attribute name="target" type="t">3</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Ritardo di 5 secondi</attribute>
+        <attribute name="action">win.set_delay</attribute>
+        <attribute name="target" type="t">5</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Ritardo di 10 secondi</attribute>
+        <attribute name="action">win.set_delay</attribute>
+        <attribute name="target" type="t">10</attribute>
+      </item>
+    </section>
+  </menu>
+
+
+  <template class="FirstMenuBar" parent="GtkBox">
+        <!-- Delay option -->
+        <child>
+          <object class="GtkMenuButton">
+            <property name="menu-model">primary_menu</property>
+            <property name="primary">True</property>
+            <property name="tooltip-text" translatable="yes">Select delay</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel"  id="delay_label">
+                    <property name="label">No delay</property>
+                    <style>
+                      <class name="title"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">pan-down-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <!-- Shortcut -->
+        <child>
+          <object class="GtkButton" id="shortcut">
+          <property name="label">shortcut</property>
+          </object>
+        </child>       
+  </template>
+</interface>
+

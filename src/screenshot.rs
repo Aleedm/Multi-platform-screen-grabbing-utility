@@ -6,6 +6,7 @@ use screenshots::{
     Screen,
 };
 
+
 pub fn screenshot() -> Pixbuf {
     let screens = Screen::all().unwrap();
 
