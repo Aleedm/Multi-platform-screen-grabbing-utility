@@ -1,11 +1,10 @@
 mod imp;
 use gtk::{gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt};
 use gtk::{ShortcutTrigger, ShortcutController};
-use gtk::gdk;
 
 use gtk4 as gtk;
 use glib::VariantType;
-use std::{time::Duration};
+use std::time::Duration;
 use crate::screenshot::screenshot;
 use std::thread;
 
@@ -44,6 +43,8 @@ impl MainWindow {
     pub fn screen_action_setup(&self, shortcut_value:&str){
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
+
+        println!("shortcut_value: {}", shortcut_value);
 
         let window = self.clone();
         let image_clone = self.imp().image.clone();
