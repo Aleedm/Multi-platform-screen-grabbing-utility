@@ -1,7 +1,7 @@
 mod imp;
 use gtk::{gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt};
-
-//use gtk::{ShortcutController, Shortcut, KeyvalTrigger, CallbackAction};
+use gtk::{ShortcutTrigger, ShortcutController};
+use gtk::gdk;
 
 use gtk4 as gtk;
 use glib::VariantType;
@@ -41,7 +41,7 @@ impl MainWindow {
         self.add_action(&set_delay);
     }
 
-    pub fn screen_action_setup(&self){
+    pub fn screen_action_setup(&self, shortcut_value:&str){
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
 
@@ -66,22 +66,13 @@ impl MainWindow {
             window.present();
         });
         self.add_action(&new_screen);
-
-        /* // Crea un controller di scorciatoie per la finestra
         let controller = ShortcutController::new();
-        controller.set_scope(gtk::ShortcutScope::Local); // Assicurati che le scorciatoie siano locali alla finestra
-        self.add_controller(&controller);
+        //controller.set_scope(gtk::ShortcutScope::Local); // Assicurati che le scorciatoie siano locali alla finestra
+        controller.add_shortcut(self.imp().shortcut_screen.clone());
+        self.add_controller(controller);        
+    }
 
-        // Crea e aggiungi una scorciatoia per attivare l'azione
-        let shortcut = Shortcut::new(
-            Some(KeyvalTrigger::new(gdk::keys::constants::N, ModifierType::CONTROL_MASK)),
-            CallbackAction::new(move |_, _| {
-                println!("Shortcut for new screenshot activated!");
-                // Qui attiveresti l'azione "new_screen" definita in precedenza
-                new_screen.activate(None);
-            }),
-        );
-        controller.add_shortcut(shortcut); */
-        
+    pub fn update_shortcut(&self, value:&str){
+        self.imp().shortcut_screen.set_trigger(ShortcutTrigger::parse_string(value));
     }
 }

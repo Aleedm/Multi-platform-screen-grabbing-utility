@@ -11,8 +11,6 @@ fn main() -> glib::ExitCode {
         .application_id("com.example.FirstGtkApp")
         .build();
 
-        application.set_accels_for_action("win.new_screen", &["<Ctrl>a"]);
-
     application.connect_activate(|app| {
         let win = MainWindow::new(app);
         win.present();

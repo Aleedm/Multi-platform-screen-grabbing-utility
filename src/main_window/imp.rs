@@ -3,13 +3,13 @@ use crate::first_menu_bar::FirstMenuBar;
 use gtk::{
     glib::{self},
     subclass::prelude::*,
+    ShortcutTrigger, Shortcut
 };
-
 
 use gtk4 as gtk;
 
 /// The private struct, which can hold widgets and other data.
-#[derive(Debug, Default, gtk::CompositeTemplate)]
+#[derive(Debug, gtk::CompositeTemplate)]
 #[template(file = "main_window.ui")]
 pub struct MainWindow {
     // The #[template_child] attribute tells the CompositeTemplate macro
@@ -19,7 +19,23 @@ pub struct MainWindow {
     #[template_child]
     pub add_ss: TemplateChild<gtk::Button>,
     #[template_child]
-    pub image: TemplateChild<gtk::Image>
+    pub image: TemplateChild<gtk::Image>,
+
+    pub shortcut_screen: Shortcut
+}
+
+impl Default for MainWindow {
+    fn default() -> Self {
+        Self {
+            menubar: Default::default(),
+            add_ss: Default::default(),
+            image: Default::default(),
+            shortcut_screen: Shortcut::new(
+                ShortcutTrigger::parse_string("<Ctrl>a"),
+                Some(gtk::NamedAction::new("win.new_screen"))
+            )
+        }
+    }
 }
 
 #[glib::object_subclass]
@@ -51,32 +67,7 @@ impl ObjectImpl for MainWindow {
     fn constructed(&self) {
         self.parent_constructed();
         self.obj().delay_action_setup();
-        self.obj().screen_action_setup()
-        //let window_clone = self.obj().clone();
-        //let menu_clone = self.menubar.clone();
-        //let image_clone = self.image.clone();
-        //self.obj().update_timer(0);
-
-        /*  Connect to "clicked" signal of `button`
-        self.add_ss.connect_clicked(move |_| {
-            let delay = menu_clone.get_delay();
-            println!("delay: {}", delay);
-            eprintln!("Clicked!");
-            window_clone.hide();
-           // while glib::MainContext::default().iteration(false) {}
-            //TODO timer
-            eprintln!("waiting {:?} seconds", delay);
-            if delay > 0 {
-                let sleep_duration = Duration::from_secs(delay);
-                thread::sleep(sleep_duration);
-                eprintln!("waited {:?} seconds", sleep_duration);
-            }
-            //image_clone.set_from_pixbuf(Some(&screenshot()));
-            screenshot();
-            image_clone.set_from_file(Some("./target/prova.png"));
-            window_clone.show();
-            window_clone.present();
-        }); */
+        self.obj().screen_action_setup("<Ctrl>a");
     }
 }
 
