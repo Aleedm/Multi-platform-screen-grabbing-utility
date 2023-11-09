@@ -53,6 +53,7 @@ impl MainWindow {
             println!("delay: {}", delay);
             eprintln!("Clicked!");
             window.hide();
+            while glib::MainContext::default().iteration(false) {}
             if delay > 0 {
                 eprintln!("waiting {:?} seconds", delay);
                 let sleep_duration = Duration::from_secs(delay);
