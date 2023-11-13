@@ -52,7 +52,6 @@ impl MainWindow {
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
 
-        println!("shortcut_value: {}", shortcut_value);
 
         let window = self.clone();
         let image_clone = self.imp().image.clone();

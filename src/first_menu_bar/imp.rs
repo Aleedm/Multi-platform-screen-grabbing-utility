@@ -1,6 +1,6 @@
 use gtk::{glib, subclass::prelude::*};
 use gtk4 as gtk;
-use std::{cell::RefCell};
+use std::cell::RefCell;
 #[derive(Debug, gtk::CompositeTemplate)]
 #[template(resource = "/org/mpsgu/first_menu_bar.ui")]
 pub struct FirstMenuBar {
