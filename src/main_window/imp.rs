@@ -1,6 +1,7 @@
 
 use crate::first_menu_bar::FirstMenuBar;
 use gtk::{
+    gio,
     glib::{self},
     subclass::prelude::*,
     ShortcutTrigger, Shortcut
@@ -10,7 +11,7 @@ use gtk4 as gtk;
 
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, gtk::CompositeTemplate)]
-#[template(file = "main_window.ui")]
+#[template(resource = "/org/mpsgu/main_window.ui")]
 pub struct MainWindow {
     // The #[template_child] attribute tells the CompositeTemplate macro
     // that a field is meant to be a child within the template.
@@ -21,7 +22,9 @@ pub struct MainWindow {
     #[template_child]
     pub image: TemplateChild<gtk::Image>,
 
-    pub shortcut_screen: Shortcut
+    pub shortcut_screen: Shortcut,
+
+    pub appl: gtk::Application
 }
 
 impl Default for MainWindow {
@@ -33,7 +36,8 @@ impl Default for MainWindow {
             shortcut_screen: Shortcut::new(
                 ShortcutTrigger::parse_string("<Ctrl>a"),
                 Some(gtk::NamedAction::new("win.new_screen"))
-            )
+            ),
+            appl: Default::default()
         }
     }
 }
@@ -67,7 +71,7 @@ impl ObjectImpl for MainWindow {
     fn constructed(&self) {
         self.parent_constructed();
         self.obj().delay_action_setup();
-        self.obj().screen_action_setup("<Ctrl>a");
+        self.obj().screen_action_setup();
     }
 }
 

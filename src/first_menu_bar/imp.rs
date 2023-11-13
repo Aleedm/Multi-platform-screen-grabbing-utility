@@ -2,7 +2,7 @@ use gtk::{glib, subclass::prelude::*};
 use gtk4 as gtk;
 use std::{cell::RefCell};
 #[derive(Debug, gtk::CompositeTemplate)]
-#[template(file = "first_menu_bar.ui")]
+#[template(resource = "/org/mpsgu/first_menu_bar.ui")]
 pub struct FirstMenuBar {
     #[template_child]
     pub delay_label: TemplateChild<gtk::Label>,
