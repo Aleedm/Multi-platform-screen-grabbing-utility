@@ -1,12 +1,10 @@
 
 use crate::first_menu_bar::FirstMenuBar;
 use gtk::{
-    gio,
     glib::{self},
-    subclass::prelude::*,
-    ShortcutTrigger, Shortcut
+    subclass::prelude::*
 };
-
+use std::cell::RefCell;
 use gtk4 as gtk;
 
 /// The private struct, which can hold widgets and other data.
@@ -22,9 +20,7 @@ pub struct MainWindow {
     #[template_child]
     pub image: TemplateChild<gtk::Image>,
 
-    pub shortcut_screen: Shortcut,
-
-    pub appl: gtk::Application
+    pub appl: RefCell<gtk::Application>
 }
 
 impl Default for MainWindow {
@@ -33,10 +29,6 @@ impl Default for MainWindow {
             menubar: Default::default(),
             add_ss: Default::default(),
             image: Default::default(),
-            shortcut_screen: Shortcut::new(
-                ShortcutTrigger::parse_string("<Ctrl>a"),
-                Some(gtk::NamedAction::new("win.new_screen"))
-            ),
             appl: Default::default()
         }
     }

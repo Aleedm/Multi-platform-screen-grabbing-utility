@@ -1,12 +1,9 @@
 mod imp;
-use gtk::subclass::application;
 use gtk::{gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt};
-use gtk::{ShortcutTrigger, ShortcutController};
-use gtk::gdk;
 
 use gtk4 as gtk;
 use glib::VariantType;
-use std::{time::Duration};
+use std::time::Duration;
 use crate::screenshot::screenshot;
 use std::thread;
 
@@ -23,6 +20,11 @@ impl MainWindow {
         //istance.appl = app.clone().upcast::<gtk::Application>();
 
         glib::Object::builder().property("application", app).build()
+    }
+
+    pub fn set_application(&self, new_app: gtk::Application) {
+        let imp = self.imp();
+        *imp.appl.borrow_mut() = new_app;
     }
 
     pub fn delay_action_setup(&self){
@@ -70,19 +72,11 @@ impl MainWindow {
             window.show();
             window.present();
         });
-        self.add_action(&new_screen);
-        //println!(self.application().
-        //let app = self.property_value("application");
-        //println!("{:?app}");
-        //self.application().unwrap().set_accels_for_action("win.new_screen", &["<Ctrl>a"]);
-        //let controller = ShortcutController::new();
-        //controller.set_scope(gtk::ShortcutScope::Local); // Assicurati che le scorciatoie siano locali alla finestra
-        //controller.add_shortcut(self.imp().shortcut_screen.clone());
-        //self.add_controller(controller);        
+        self.add_action(&new_screen);    
     }
 
-    pub fn update_shortcut(&self, value:&str){
-        //self.imp().shortcut_screen.set_trigger(ShortcutTrigger::parse_string(value));
+    pub fn update_shortcut(&self, values:&[&str]){
+        self.imp().appl.borrow().set_accels_for_action("win.new_screen", values);
     }
 
 }

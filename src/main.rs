@@ -14,13 +14,10 @@ fn main() -> glib::ExitCode {
         .application_id("org.mpsgu")
         .build();
 
-
-    //let app_clone = Rc::new(RefCell::new(application));
-    //let app_clone_for_activate = Rc::clone(&app_clone);    
-
-    application.set_accels_for_action("win.new_screen", &["<Ctrl>a"]);
-    application.connect_activate(|app| {
+    application.connect_activate(move |app| {
         let win: MainWindow = MainWindow::new(app);
+        win.set_application(app.clone());
+        win.update_shortcut(&["<Ctrl>a"]);
         win.present();
     });
     application.run()
