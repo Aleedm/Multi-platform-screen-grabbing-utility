@@ -1,6 +1,5 @@
 mod imp;
 use gtk::{gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt};
-use gtk::{ShortcutTrigger, ShortcutController};
 
 use gtk4 as gtk;
 use glib::VariantType;
@@ -14,9 +13,18 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup;
 }
 
-impl MainWindow {
+impl MainWindow {    
     pub fn new<P: IsA<gtk::Application>>(app: &P) -> Self {
+        //let appc:gtk::Application = app.clone().upcast::<gtk::Application>();
+        //let istance:MainWindow = glib::Object::builder().property("application", app.clone().upcast::<gtk::Application>()).build();
+        //istance.appl = app.clone().upcast::<gtk::Application>();
+
         glib::Object::builder().property("application", app).build()
+    }
+
+    pub fn set_application(&self, new_app: gtk::Application) {
+        let imp = self.imp();
+        *imp.appl.borrow_mut() = new_app;
     }
 
     pub fn delay_action_setup(&self){
@@ -40,7 +48,7 @@ impl MainWindow {
         self.add_action(&set_delay);
     }
 
-    pub fn screen_action_setup(&self, shortcut_value:&str){
+    pub fn screen_action_setup(&self){
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
 
@@ -67,14 +75,11 @@ impl MainWindow {
             window.show();
             window.present();
         });
-        self.add_action(&new_screen);
-        let controller = ShortcutController::new();
-        //controller.set_scope(gtk::ShortcutScope::Local); // Assicurati che le scorciatoie siano locali alla finestra
-        controller.add_shortcut(self.imp().shortcut_screen.clone());
-        self.add_controller(controller);        
+        self.add_action(&new_screen);    
     }
 
-    pub fn update_shortcut(&self, value:&str){
-        self.imp().shortcut_screen.set_trigger(ShortcutTrigger::parse_string(value));
+    pub fn update_shortcut(&self, values:&[&str]){
+        self.imp().appl.borrow().set_accels_for_action("win.new_screen", values);
     }
+
 }
