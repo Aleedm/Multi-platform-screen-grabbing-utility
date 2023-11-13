@@ -59,6 +59,7 @@
         <child>
           <object class="GtkButton" id="shortcut">
           <property name="label">shortcut</property>
+          <property name="action-name">win.show-help-overlay</property>
           </object>
         </child>       
   </template>

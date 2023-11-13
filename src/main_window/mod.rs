@@ -75,4 +75,16 @@ impl MainWindow {
     pub fn update_shortcut(&self, value:&str){
         self.imp().shortcut_screen.set_trigger(ShortcutTrigger::parse_string(value));
     }
+
+   /*  pub fn set_help_window(&self){
+        let show_help_overlay = gio::SimpleAction::new("show-help-overlay", None);
+        
+        let window = self.clone();
+        
+        show_help_overlay.connect_activate(clone!(@weak window => move |_, _| {
+        let help_overlay: GtkShortcutsWindow = window.shortcuts_window().unwrap();
+        help_overlay.show();
+    }));
+    window.add_action(&show_help_overlay);
+    } */
 }
