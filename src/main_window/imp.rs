@@ -18,7 +18,7 @@ pub struct MainWindow {
     #[template_child]
     pub add_ss: TemplateChild<gtk::Button>,
     #[template_child]
-    pub image: TemplateChild<gtk::Image>,
+    pub image: TemplateChild<gtk::Picture>,
 
     pub appl: RefCell<gtk::Application>
 }

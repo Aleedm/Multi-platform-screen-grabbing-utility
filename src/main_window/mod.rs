@@ -70,7 +70,12 @@ impl MainWindow {
             }
             //image_clone.set_from_pixbuf(Some(&screenshot()));
             screenshot();
-            image_clone.set_from_file(Some("./target/prova.png"));
+            //image_clone.set_filename(Some("./target/prova.png"));
+
+            image_clone.set_filename(Some("./target/prova.png"));
+            if !window.is_maximized() {
+                window.maximize();
+            }
             window.show();
             window.present();
         });

@@ -46,7 +46,7 @@
         </child>
 
         <child>
-          <object class="GtkImage" id="image">
+          <object class="GtkPicture" id="image">
           <property name="hexpand">True</property>
           <property name="vexpand">True</property>
           <layout>
@@ -54,6 +54,7 @@
             <property name="column-span">3</property>
             <property name="row">2</property>
           </layout>
+          <property name="keep-aspect-ratio">True</property>
           </object>
         </child>
         
