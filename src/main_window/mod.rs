@@ -15,10 +15,6 @@ glib::wrapper! {
 
 impl MainWindow {    
     pub fn new<P: IsA<gtk::Application>>(app: &P) -> Self {
-        //let appc:gtk::Application = app.clone().upcast::<gtk::Application>();
-        //let istance:MainWindow = glib::Object::builder().property("application", app.clone().upcast::<gtk::Application>()).build();
-        //istance.appl = app.clone().upcast::<gtk::Application>();
-
         glib::Object::builder().property("application", app).build()
     }
 
@@ -68,11 +64,7 @@ impl MainWindow {
                 thread::sleep(sleep_duration);
                 eprintln!("waited {:?} seconds", sleep_duration);
             }
-            //image_clone.set_from_pixbuf(Some(&screenshot()));
-            screenshot();
-            //image_clone.set_filename(Some("./target/prova.png"));
-
-            image_clone.set_filename(Some("./target/prova.png"));
+            image_clone.set_pixbuf(Some(&screenshot()));
             if !window.is_maximized() {
                 window.maximize();
             }
