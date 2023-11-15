@@ -16,8 +16,6 @@ pub struct MainWindow {
     #[template_child]
     pub menubar: TemplateChild<FirstMenuBar>,
     #[template_child]
-    pub add_ss: TemplateChild<gtk::Button>,
-    #[template_child]
     pub image: TemplateChild<gtk::Picture>,
 
     pub appl: RefCell<gtk::Application>
@@ -27,7 +25,6 @@ impl Default for MainWindow {
     fn default() -> Self {
         Self {
             menubar: Default::default(),
-            add_ss: Default::default(),
             image: Default::default(),
             appl: Default::default()
         }

@@ -5,6 +5,8 @@ use std::cell::RefCell;
 #[template(resource = "/org/mpsgu/first_menu_bar.ui")]
 pub struct FirstMenuBar {
     #[template_child]
+    pub add_ss: TemplateChild<gtk::Button>,
+    #[template_child]
     pub delay_label: TemplateChild<gtk::Label>,
     #[template_child]
     pub shortcut: TemplateChild<gtk::Button>,
@@ -15,6 +17,7 @@ pub struct FirstMenuBar {
 impl Default for FirstMenuBar {
     fn default() -> Self {
         Self {
+            add_ss: Default::default(),
             delay_label: Default::default(),
             shortcut: Default::default(),
             delay: RefCell::new(0),

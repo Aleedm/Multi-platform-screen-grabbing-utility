@@ -28,6 +28,29 @@
 
 
   <template class="FirstMenuBar" parent="GtkBox">
+        <child>
+          <object class="GtkButton" id="add_ss">
+            <property name="action-name">win.new_screen</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">list-add-symbolic</property>
+                    <style>
+                      <class name="title"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">New Screenshot</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
         <!-- Delay option -->
         <child>
           <object class="GtkMenuButton">

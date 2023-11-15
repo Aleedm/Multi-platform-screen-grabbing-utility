@@ -31,16 +31,4 @@ impl FirstMenuBar {
         };
         self.imp().delay_label.set_label(label_text); // Update the label
     }
-
-
-    /* #[template_callback]
-    fn toggle_toggled(&self, toggle: &gtk::ToggleButton) {
-        if toggle.is_active() {
-            self.popover.popup();
-        }
-    }
-    #[template_callback(name = "popover_closed")]
-    fn unset_toggle(&self) {
-        self.toggle.set_active(false);
-    } */
 }
