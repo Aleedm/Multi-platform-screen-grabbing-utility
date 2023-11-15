@@ -1,6 +1,8 @@
-use gtk::{glib, subclass::prelude::*};
+use gtk::{glib, subclass::prelude::*, prelude::WidgetExt};
 use gtk4 as gtk;
 use std::cell::RefCell;
+
+use crate::edit_menu_bar::EditMenuBar;
 #[derive(Debug, gtk::CompositeTemplate)]
 #[template(resource = "/org/mpsgu/first_menu_bar.ui")]
 pub struct FirstMenuBar {
@@ -10,7 +12,8 @@ pub struct FirstMenuBar {
     pub delay_label: TemplateChild<gtk::Label>,
     #[template_child]
     pub shortcut: TemplateChild<gtk::Button>,
-
+    #[template_child]
+    pub edit: TemplateChild<EditMenuBar>,
     pub delay: RefCell<u64>
 }
 
@@ -20,6 +23,7 @@ impl Default for FirstMenuBar {
             add_ss: Default::default(),
             delay_label: Default::default(),
             shortcut: Default::default(),
+            edit: Default::default(),
             delay: RefCell::new(0),
         }
     }
@@ -40,7 +44,11 @@ impl ObjectSubclass for FirstMenuBar {
     }
 }
 // Trait shared by all GObjects
-impl ObjectImpl for FirstMenuBar {}
+impl ObjectImpl for FirstMenuBar {
+    fn constructed(&self) {
+        self.edit.hide();
+    }
+}
 
 // Trait shared by all widgets
 impl WidgetImpl for FirstMenuBar {}

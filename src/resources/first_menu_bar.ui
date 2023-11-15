@@ -28,63 +28,69 @@
 
 
   <template class="FirstMenuBar" parent="GtkBox">
-        <child>
-          <object class="GtkButton" id="add_ss">
-            <property name="action-name">win.new_screen</property>
-            <property name="child">
-              <object class="GtkBox">
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkImage">
-                    <property name="icon-name">list-add-symbolic</property>
-                    <style>
-                      <class name="title"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label">New Screenshot</property>
-                  </object>
-                </child>
+  <!-- Delay option -->
+    <child>
+      <object class="GtkButton" id="add_ss">
+        <property name="action-name">win.new_screen</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">list-add-symbolic</property>
+                <style>
+                  <class name="title"/>
+                </style>
               </object>
-            </property>
-          </object>
-        </child>
-        <!-- Delay option -->
-        <child>
-          <object class="GtkMenuButton">
-            <property name="menu-model">primary_menu</property>
-            <property name="primary">True</property>
-            <property name="tooltip-text" translatable="yes">Select delay</property>
-            <property name="child">
-              <object class="GtkBox">
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkLabel"  id="delay_label">
-                    <property name="label">No delay</property>
-                    <style>
-                      <class name="title"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkImage">
-                    <property name="icon-name">pan-down-symbolic</property>
-                  </object>
-                </child>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">New Screenshot</property>
               </object>
-            </property>
+            </child>
           </object>
-        </child>
+        </property>
+      </object>
+    </child>
+    <!-- Delay option -->
+    <child>
+      <object class="GtkMenuButton">
+        <property name="menu-model">primary_menu</property>
+        <property name="primary">True</property>
+        <property name="tooltip-text" translatable="yes">Select delay</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkLabel"  id="delay_label">
+                <property name="label">No delay</property>
+                <style>
+                  <class name="title"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pan-down-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
 
-        <!-- Shortcut -->
-        <child>
-          <object class="GtkButton" id="shortcut">
-          <property name="label">shortcut</property>
-          <property name="action-name">win.show-help-overlay</property>
-          </object>
-        </child>       
+    <!-- Shortcut -->
+    <child>
+      <object class="GtkButton" id="shortcut">
+      <property name="label">shortcut</property>
+      <property name="action-name">win.show-help-overlay</property>
+      </object>
+    </child>       
+
+    <!-- EditMenu -->
+    <child>
+      <object class="EditMenuBar" id="edit"/>
+    </child>
   </template>
 </interface>
 

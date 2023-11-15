@@ -2,6 +2,7 @@ use gtk4 as gtk;
 
 mod main_window;
 pub mod first_menu_bar;
+pub mod edit_menu_bar;
 pub mod screenshot;
 
 use main_window::MainWindow;

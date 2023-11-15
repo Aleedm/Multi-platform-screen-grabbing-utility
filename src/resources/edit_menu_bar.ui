@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="EditMenuBar" parent="GtkBox">
+  <!-- Save -->
+    <child>
+      <object class="GtkButton" id="save">
+      <property name="label">Save</property>
+      <property name="action-name">win.save_screen</property>
+      </object>
+    </child>  
+
+    <!-- Copy -->
+    <child>
+      <object class="GtkButton" id="copy">
+      <property name="label">Copy</property>
+      <property name="action-name">win.copy_screen</property>
+      </object>
+    </child>       
+  </template>
+</interface>
+

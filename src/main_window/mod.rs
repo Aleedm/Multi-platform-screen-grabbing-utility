@@ -68,6 +68,8 @@ impl MainWindow {
             if !window.is_maximized() {
                 window.maximize();
             }
+
+            window.imp().menubar.imp().edit.show();
             window.show();
             window.present();
         });
