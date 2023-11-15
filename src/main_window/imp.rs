@@ -61,6 +61,7 @@ impl ObjectImpl for MainWindow {
         self.parent_constructed();
         self.obj().delay_action_setup();
         self.obj().screen_action_setup();
+        self.obj().save_action_setup();
     }
 }
 

@@ -1,11 +1,19 @@
 mod imp;
-use gtk::{gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt};
+use gtk::{gio, 
+    glib,
+    prelude::*,
+    subclass::prelude::ObjectSubclassIsExt,
+    FileChooserAction,
+    FileChooserNative,
+    FileChooserDialog,
+    ResponseType};
 
 use gtk4 as gtk;
 use glib::VariantType;
 use std::time::Duration;
 use crate::screenshot::screenshot;
 use std::thread;
+
 
 glib::wrapper! {
     pub struct MainWindow(ObjectSubclass<imp::MainWindow>)
@@ -78,6 +86,49 @@ impl MainWindow {
 
     pub fn update_shortcut(&self, values:&[&str]){
         self.imp().appl.borrow().set_accels_for_action("win.new_screen", values);
+    }
+
+    pub fn save_action_setup(&self){
+        // Crea l'azione
+        let save_screen = gio::SimpleAction::new("save_screen", None);
+        
+        let window = self.clone();
+        //let image_clone = self.imp().image.clone();
+        save_screen.connect_activate(glib::clone!(@weak window =>move |_, _| {
+            // Apri la finestra di dialogo per salvare l'immagine
+            let dialog = FileChooserDialog::new(
+                Some("Save Image"),
+               Some(&window), 
+               FileChooserAction::Save,
+              &[]);
+            dialog.add_buttons(&[
+                ("Cancel", ResponseType::Cancel),
+                ("Save", ResponseType::Accept),
+            ]);
+
+            // Imposta un nome di file predefinito, se necessario
+            dialog.set_current_name("untitled.png");
+
+            // Mostra la finestra di dialogo e attendi la risposta dell'utente
+            dialog.show();
+            dialog.run_async(|obj, answer| {
+                if answer == ResponseType::Accept{                    
+                    if let Some(file_path) = obj.current_name() {
+                        println!("Salvataggio dell'immagine in: {:?}", file_path);
+                        //SAVE
+                    }
+                }
+                obj.close();
+            });
+                //window.imp().image_clone.save_image
+                    //save_pixbuf_to_file(pixbuf, &file_path);
+    
+
+           // dialog.close();
+        }));
+    
+        self.add_action(&save_screen);
+
     }
 
 }

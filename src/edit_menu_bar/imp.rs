@@ -1,6 +1,5 @@
 use gtk::{glib, subclass::prelude::*};
 use gtk4 as gtk;
-use std::cell::RefCell;
 #[derive(Debug, Default, gtk::CompositeTemplate)]
 #[template(resource = "/org/mpsgu/edit_menu_bar.ui")]
 pub struct EditMenuBar {

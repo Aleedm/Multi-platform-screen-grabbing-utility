@@ -4,7 +4,9 @@
   <!-- Save -->
     <child>
       <object class="GtkButton" id="save">
-      <property name="label">Save</property>
+      <property name="label" translatable="yes">Save</property>
+      <property name="tooltip-text" translatable="yes">Save image</property>
+      
       <property name="action-name">win.save_screen</property>
       </object>
     </child>  
@@ -12,7 +14,8 @@
     <!-- Copy -->
     <child>
       <object class="GtkButton" id="copy">
-      <property name="label">Copy</property>
+      <property name="label" translatable="yes">Copy</property>
+      <property name="tooltip-text" translatable="yes">Copy image to clipboard</property>
       <property name="action-name">win.copy_screen</property>
       </object>
     </child>       
