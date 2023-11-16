@@ -3,6 +3,14 @@
   <template class="EditMenuBar" parent="GtkBox">
   <!-- Save -->
     <child>
+      <object class="GtkButton" id="crop">
+      <property name="label" translatable="yes">Crop</property>
+      <property name="tooltip-text" translatable="yes">Crop image</property>
+      <property name="action-name">win.crop</property>
+      </object>
+    </child> 
+  <!-- Save -->
+    <child>
       <object class="GtkButton" id="save">
       <property name="label" translatable="yes">Save</property>
       <property name="tooltip-text" translatable="yes">Save image</property>

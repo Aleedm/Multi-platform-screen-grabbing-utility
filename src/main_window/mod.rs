@@ -156,4 +156,20 @@ impl MainWindow {
     
     }
 
+
+    pub fn crop_action_setup(&self){
+        // Crea l'azione
+        let crop = gio::SimpleAction::new("crop", None);
+        
+        let window = self.clone();
+        //let image_clone = self.imp().image.clone();
+        crop.connect_activate(move |_, _| {
+            //CROP
+        });
+
+        
+        self.add_action(&crop);
+    
+    }
+
 }

@@ -63,6 +63,7 @@ impl ObjectImpl for MainWindow {
         self.obj().screen_action_setup();
         self.obj().save_action_setup();
         self.obj().copy_action_setup();
+        self.obj().crop_action_setup();
     }
 }
 

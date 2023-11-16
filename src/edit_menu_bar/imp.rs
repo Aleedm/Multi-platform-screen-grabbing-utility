@@ -4,6 +4,8 @@ use gtk4 as gtk;
 #[template(resource = "/org/mpsgu/edit_menu_bar.ui")]
 pub struct EditMenuBar {
     #[template_child]
+    pub crop: TemplateChild<gtk::Button>,
+    #[template_child]
     pub save: TemplateChild<gtk::Button>,
     #[template_child]
     pub copy: TemplateChild<gtk::Button>
