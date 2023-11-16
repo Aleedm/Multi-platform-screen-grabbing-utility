@@ -4,7 +4,6 @@ use gtk::{gio,
     prelude::*,
     subclass::prelude::ObjectSubclassIsExt,
     FileChooserAction,
-    FileChooserNative,
     FileChooserDialog,
     ResponseType};
 
@@ -13,6 +12,8 @@ use glib::VariantType;
 use std::time::Duration;
 use crate::screenshot::screenshot;
 use std::thread;
+use arboard::{Clipboard, ImageData};
+use std::borrow::Cow;
 
 
 glib::wrapper! {
@@ -73,13 +74,12 @@ impl MainWindow {
                 eprintln!("waited {:?} seconds", sleep_duration);
             }
             image_clone.set_pixbuf(Some(&screenshot()));
-            if !window.is_maximized() {
-                window.maximize();
-            }
-
             window.imp().menubar.imp().edit.show();
             window.show();
             window.present();
+            if !window.is_maximized() {
+                window.maximize();
+            }
         });
         self.add_action(&new_screen);    
     }
@@ -111,24 +111,49 @@ impl MainWindow {
 
             // Mostra la finestra di dialogo e attendi la risposta dell'utente
             dialog.show();
+
             dialog.run_async(|obj, answer| {
                 if answer == ResponseType::Accept{                    
                     if let Some(file_path) = obj.current_name() {
                         println!("Salvataggio dell'immagine in: {:?}", file_path);
-                        //SAVE
+                        
                     }
                 }
                 obj.close();
             });
-                //window.imp().image_clone.save_image
-                    //save_pixbuf_to_file(pixbuf, &file_path);
-    
-
-           // dialog.close();
         }));
     
         self.add_action(&save_screen);
 
+    }
+
+    pub fn copy_action_setup(&self){
+        // Crea l'azione
+        let copy_screen = gio::SimpleAction::new("copy_screen", None);
+        
+        let window = self.clone();
+        //let image_clone = self.imp().image.clone();
+        copy_screen.connect_activate(move |_, _| {
+            //Copy image to clipboard
+            let mut clipboard = Clipboard::new().unwrap();
+            let buf = screenshot();
+            let glib_bytes = buf.pixel_bytes();
+            // Ottieni un puntatore ai dati e convertilo in una fetta di byte
+            let slice = unsafe {
+                std::slice::from_raw_parts(glib_bytes.clone().unwrap().as_ptr() as *const u8, glib_bytes.clone().unwrap().len())
+            };
+
+            let bytes1 = Cow::Borrowed(slice);
+            let img_data = ImageData { 
+                width: buf.width() as usize, 
+                height: buf.height() as usize,
+                bytes:bytes1.clone() };
+	        clipboard.set_image(img_data).unwrap();
+        });
+
+        
+        self.add_action(&copy_screen);
+    
     }
 
 }

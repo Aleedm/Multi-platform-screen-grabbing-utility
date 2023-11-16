@@ -26,6 +26,18 @@
     </section>
   </menu>
 
+  <menu id="side_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Schortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Save Options</attribute>
+      </item>
+    </section>
+  </menu>
+
 
   <template class="FirstMenuBar" parent="GtkBox">
   <!-- Delay option -->
@@ -91,6 +103,30 @@
     <child>
       <object class="EditMenuBar" id="edit"/>
     </child>
+
+    <!-- Side menu -->
+    <child>
+      <object class="GtkMenuButton">
+        <property name="menu-model">side_menu</property>
+        <property name="primary">True</property>
+        <property name="tooltip-text" translatable="yes">Menu options</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">:</property>
+                <style>
+                  <class name="title"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
+
+
   </template>
 </interface>
 
