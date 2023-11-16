@@ -1,20 +1,20 @@
 mod imp;
-use gtk::{gio, 
-    glib,
-    prelude::*,
-    subclass::prelude::ObjectSubclassIsExt,
-    FileChooserAction,
-    FileChooserDialog,
-    ResponseType};
+use gtk::{
+    cairo, gdk::pixbuf_get_from_surface, gio, glib, prelude::*,
+    subclass::prelude::ObjectSubclassIsExt, FileChooserAction, FileChooserDialog, ResponseType,
+};
 
-use gtk4 as gtk;
-use glib::VariantType;
-use std::time::Duration;
+use gdk_pixbuf::Pixbuf;
+use gtk::gdk_pixbuf;
+
 use crate::screenshot::screenshot;
-use std::thread;
 use arboard::{Clipboard, ImageData};
+use cairo::{Format, ImageSurface};
+use glib::VariantType;
+use gtk4 as gtk;
 use std::borrow::Cow;
-
+use std::thread;
+use std::time::Duration;
 
 glib::wrapper! {
     pub struct MainWindow(ObjectSubclass<imp::MainWindow>)
@@ -22,7 +22,7 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup;
 }
 
-impl MainWindow {    
+impl MainWindow {
     pub fn new<P: IsA<gtk::Application>>(app: &P) -> Self {
         glib::Object::builder().property("application", app).build()
     }
@@ -32,7 +32,7 @@ impl MainWindow {
         *imp.appl.borrow_mut() = new_app;
     }
 
-    pub fn delay_action_setup(&self){
+    pub fn delay_action_setup(&self) {
         // Create the action for setting delay and add it to the window
         let set_delay = gio::SimpleAction::new("set_delay", Some(&VariantType::new("t").unwrap()));
 
@@ -44,7 +44,7 @@ impl MainWindow {
                 .expect("The value should be of type u64");
 
             action.set_state(parameter.unwrap());
-            
+
             // Get the FirstMenuBar instance and call the update_delay method
             temp_self.imp().menubar.update_delay(delay_value);
             // Set the state of the action to the new delay value
@@ -53,10 +53,9 @@ impl MainWindow {
         self.add_action(&set_delay);
     }
 
-    pub fn screen_action_setup(&self){
+    pub fn screen_action_setup(&self) {
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
-
 
         let window = self.clone();
         let image_clone = self.imp().image.clone();
@@ -81,24 +80,27 @@ impl MainWindow {
                 window.maximize();
             }
         });
-        self.add_action(&new_screen);    
+        self.add_action(&new_screen);
     }
 
-    pub fn update_shortcut(&self, values:&[&str]){
-        self.imp().appl.borrow().set_accels_for_action("win.new_screen", values);
+    pub fn update_shortcut(&self, values: &[&str]) {
+        self.imp()
+            .appl
+            .borrow()
+            .set_accels_for_action("win.new_screen", values);
     }
 
-    pub fn save_action_setup(&self){
+    pub fn save_action_setup(&self) {
         // Crea l'azione
         let save_screen = gio::SimpleAction::new("save_screen", None);
-        
+
         let window = self.clone();
         //let image_clone = self.imp().image.clone();
         save_screen.connect_activate(glib::clone!(@weak window =>move |_, _| {
             // Apri la finestra di dialogo per salvare l'immagine
             let dialog = FileChooserDialog::new(
                 Some("Save Image"),
-               Some(&window), 
+               Some(&window),
                FileChooserAction::Save,
               &[]);
             dialog.add_buttons(&[
@@ -113,47 +115,61 @@ impl MainWindow {
             dialog.show();
 
             dialog.run_async(|obj, answer| {
-                if answer == ResponseType::Accept{                    
+                if answer == ResponseType::Accept{
                     if let Some(file_path) = obj.current_name() {
                         println!("Salvataggio dell'immagine in: {:?}", file_path);
-                        
+
                     }
                 }
                 obj.close();
             });
         }));
-    
-        self.add_action(&save_screen);
 
+        self.add_action(&save_screen);
     }
 
-    pub fn copy_action_setup(&self){
+    pub fn copy_action_setup(&self) {
         // Crea l'azione
         let copy_screen = gio::SimpleAction::new("copy_screen", None);
-        
-        let window = self.clone();
-        //let image_clone = self.imp().image.clone();
-        copy_screen.connect_activate(move |_, _| {
-            //Copy image to clipboard
-            let mut clipboard = Clipboard::new().unwrap();
-            let buf = screenshot();
-            let glib_bytes = buf.pixel_bytes();
-            // Ottieni un puntatore ai dati e convertilo in una fetta di byte
-            let slice = unsafe {
-                std::slice::from_raw_parts(glib_bytes.clone().unwrap().as_ptr() as *const u8, glib_bytes.clone().unwrap().len())
-            };
 
-            let bytes1 = Cow::Borrowed(slice);
-            let img_data = ImageData { 
-                width: buf.width() as usize, 
-                height: buf.height() as usize,
-                bytes:bytes1.clone() };
-	        clipboard.set_image(img_data).unwrap();
+        let window = self.clone();
+        let image_clone = self.imp().image.clone();
+        copy_screen.connect_activate(move |_, _| {
+            /*//Copy image to clipboard
+
+            let width = image_clone.size(gtk::Orientation::Horizontal);
+            let height = image_clone.size(gtk::Orientation::Vertical);
+
+            let surface = cairo::ImageSurface::create(Format::ARgb32, width, height)
+                .expect("Couldn't create a surface!");
+            let context = cairo::Context::new(&surface).unwrap();
+
+            let paintable = image_clone.paintable().unwrap();
+            // Disegna il paintable sul contesto Cairo
+
+            context.set_source_surface(surface, width as f64, height as f64);
+            //paintable.snapshot(&mut gtk::Snapshot::new(context), width as f64, height as f64);
+            // Converti la superficie Cairo in un GdkPixbuf
+            let pixbuf = pixbuf_get_from_surface(&surface, 0, 0, width, height)
+                .expect("Failed to create Pixbuf");
+
+            let mut clipboard = Clipboard::new().unwrap();
+            // let buf = screenshot();
+            // let glib_bytes = buf.pixel_bytes();
+            // // Ottieni un puntatore ai dati e convertilo in una fetta di byte
+            // let slice = unsafe {
+            //     std::slice::from_raw_parts(glib_bytes.clone().unwrap().as_ptr() as *const u8, glib_bytes.clone().unwrap().len())
+            // };
+
+            // let bytes1 = Cow::Borrowed(slice);
+            let img_data = ImageData {
+                width: width as usize,
+                height: height as usize,
+                bytes: Cow::Borrowed(unsafe { pixbuf.pixels() }),
+            };
+            clipboard.set_image(img_data).unwrap();*/
         });
 
-        
         self.add_action(&copy_screen);
-    
     }
-
 }

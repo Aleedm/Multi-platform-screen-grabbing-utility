@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use gdk_pixbuf::Pixbuf;
 use gtk::gdk_pixbuf::{self, Colorspace};
 use gtk::glib::{self};
@@ -6,6 +8,7 @@ use screenshots::{
     image::{ImageBuffer, Rgba},
     Screen,
 };
+use arboard::{Clipboard, ImageData};
 
 
 pub fn screenshot() -> Pixbuf {
@@ -15,6 +18,23 @@ pub fn screenshot() -> Pixbuf {
 
     println!("capturer: {:?}", screen);
     let buffer = screen.capture().unwrap();
+    //TODO remove save to clipboard
+    let mut clipboard = Clipboard::new().unwrap();
+
+    let width = buffer.width() as usize;
+    let height = buffer.height() as usize;
+    let binding = buffer.as_flat_samples();
+    let bytes = binding.as_slice();
+
+    let img_data = ImageData{
+        width,
+        height,
+        bytes: Cow::Borrowed(bytes),
+    };
+
+    clipboard.set_image(img_data).unwrap();
+
+
     let pixbuf = image_buffer_to_gdk_pixbuf(&buffer).unwrap();
     pixbuf
 }
