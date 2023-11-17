@@ -1,6 +1,6 @@
 mod imp;
 use gtk::glib::clone;
-use gtk::{gdk, GestureClick};
+use gtk::{gdk, GestureClick, GestureDrag};
 use gtk::{
     gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt, FileChooserAction,
     FileChooserDialog, ResponseType,
@@ -171,11 +171,15 @@ impl MainWindow {
 
         let drawing_area = self.imp().drawing_area.clone();
         let drawing_area_clone = drawing_area.clone();
-        let gesture = GestureClick::new();
-        let gesture_clone = gesture.clone();
+        let gesture_click = GestureClick::new();
+        let gesture_click_clone = gesture_click.clone();
+        let gesture_drag = GestureDrag::new();
+        let gesture_drag_clone = gesture_drag.clone();
 
-        gesture.set_button(gdk::BUTTON_PRIMARY);
-        drawing_area.add_controller(gesture);
+        gesture_drag.set_button(gdk::BUTTON_PRIMARY);
+        gesture_click.set_button(gdk::BUTTON_PRIMARY);
+        drawing_area.add_controller(gesture_drag);
+        drawing_area.add_controller(gesture_click);
 
         let crop_area = Rc::new(RefCell::new(CropArea {
             start_x: 0.0,
@@ -196,26 +200,37 @@ impl MainWindow {
             let _ =cr.stroke();
         }));
 
-        crop.connect_activate(clone!(@strong crop_mode_active, @strong gesture_clone, @strong crop_area => move |_, _| {
-            eprintln!("crop");
-            *crop_mode_active.borrow_mut() = true;
-            eprintln!("crop_mode_active: {}", *crop_mode_active.borrow());
+        crop.connect_activate(
+            clone!(@strong crop_mode_active, @strong crop_area => move |_, _| {
+                *crop_mode_active.borrow_mut() = true;
 
-            // Resetta l'area di selezione
-            let mut area = crop_area.borrow_mut();
-            *area = CropArea {
-                start_x: 0.0,
-                start_y: 0.0,
-                end_x: 0.0,
-                end_y: 0.0,
-            };
-            drawing_area.queue_draw();
-        }));
+                // Resetta l'area di selezione
+                let mut area = crop_area.borrow_mut();
+                *area = CropArea {
+                    start_x: 0.0,
+                    start_y: 0.0,
+                    end_x: 0.0,
+                    end_y: 0.0,
+                };
+                drawing_area.queue_draw();
+            }),
+        );
 
         // Gestione del click del mouse
-        gesture_clone.connect_pressed(
-            clone!(@strong crop_mode_active,@strong crop_area => move |_, _, x, y| {
+        /*gesture_drag_clone.connect_drag_begin(
+            clone!(@strong crop_mode_active,@strong crop_area => move | _, x, y| {
                 eprintln!("pressed, crop_mode_active: {}", *crop_mode_active.borrow());
+                if *crop_mode_active.borrow() {
+                    let mut area = crop_area.borrow_mut();
+                    area.start_x = x;
+                    area.start_y = y;
+                }
+            }),
+        );*/
+
+        gesture_click_clone.connect_pressed(
+            clone!(@strong crop_mode_active, @strong crop_area => move |_, _, x, y| {
+
                 if *crop_mode_active.borrow() {
                     let mut area = crop_area.borrow_mut();
                     area.start_x = x;
@@ -224,18 +239,19 @@ impl MainWindow {
             }),
         );
         // Gestione del rilascio del mouse
-        gesture_clone.connect_released(
-            clone!(@strong crop_mode_active, @strong drawing_area_clone, @strong crop_area => move |_, _, x, y| {
-                eprintln!("released, crop_mode_active: {}", *crop_mode_active.borrow());
+        gesture_drag_clone.connect_drag_update(
+            clone!(@strong crop_mode_active, @strong drawing_area_clone, @strong crop_area => move |_, offset_x, offset_y| {
                 if *crop_mode_active.borrow() {
                     let mut area = crop_area.borrow_mut();
-                    area.end_x = x;
-                    area.end_y = y;
-
+                    area.end_x = area.start_x + offset_x;
+                    area.end_y = area.start_y + offset_y;
                     drawing_area_clone.queue_draw();
                 }
-            }),
-        );
+            }));
+
+        gesture_drag_clone.connect_drag_end(clone!(@strong crop_mode_active => move |_, _, _| {
+            //\*crop_mode_active.borrow_mut() = false;
+        }));
 
         self.add_action(&crop);
     }
