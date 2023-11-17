@@ -1,11 +1,10 @@
-
 use crate::first_menu_bar::FirstMenuBar;
 use gtk::{
     glib::{self},
-    subclass::prelude::*
+    subclass::prelude::*,
 };
-use std::cell::RefCell;
 use gtk4 as gtk;
+use std::cell::RefCell;
 
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, gtk::CompositeTemplate)]
@@ -17,8 +16,12 @@ pub struct MainWindow {
     pub menubar: TemplateChild<FirstMenuBar>,
     #[template_child]
     pub image: TemplateChild<gtk::Picture>,
+    #[template_child]
+    pub overlay: TemplateChild<gtk::Overlay>,
+    #[template_child]
+    pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
-    pub appl: RefCell<gtk::Application>
+    pub appl: RefCell<gtk::Application>,
 }
 
 impl Default for MainWindow {
@@ -26,7 +29,9 @@ impl Default for MainWindow {
         Self {
             menubar: Default::default(),
             image: Default::default(),
-            appl: Default::default()
+            appl: Default::default(),
+            drawing_area: Default::default(),
+            overlay: Default::default()
         }
     }
 }
