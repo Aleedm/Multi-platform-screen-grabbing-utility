@@ -5,6 +5,7 @@ use gtk::{
 };
 use gtk4 as gtk;
 use std::cell::RefCell;
+use gtk::gdk_pixbuf::{Pixbuf, Colorspace};
 
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, gtk::CompositeTemplate)]
@@ -22,6 +23,8 @@ pub struct MainWindow {
     pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
     pub appl: RefCell<gtk::Application>,
+
+    pub pixbuf: RefCell<Pixbuf>
 }
 
 impl Default for MainWindow {
@@ -31,7 +34,8 @@ impl Default for MainWindow {
             image: Default::default(),
             appl: Default::default(),
             drawing_area: Default::default(),
-            overlay: Default::default()
+            overlay: Default::default(),
+            pixbuf: RefCell::new(Pixbuf::new(Colorspace::Rgb, true, 8, 10, 10).unwrap())
         }
     }
 }

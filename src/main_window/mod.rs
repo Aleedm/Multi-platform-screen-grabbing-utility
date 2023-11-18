@@ -14,6 +14,7 @@ use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
 use std::{borrow::Cow, cell::RefCell};
+use gtk::gdk_pixbuf::Pixbuf;
 
 glib::wrapper! {
     pub struct MainWindow(ObjectSubclass<imp::MainWindow>)
@@ -36,6 +37,10 @@ impl MainWindow {
     pub fn set_application(&self, new_app: gtk::Application) {
         let imp = self.imp();
         *imp.appl.borrow_mut() = new_app;
+    }
+    pub fn set_pixbuf(&self, new_pixbuf: Pixbuf) {
+        let imp = self.imp();
+        *imp.pixbuf.borrow_mut() = new_pixbuf;
     }
 
     pub fn delay_action_setup(&self) {
@@ -78,7 +83,9 @@ impl MainWindow {
                 thread::sleep(sleep_duration);
                 eprintln!("waited {:?} seconds", sleep_duration);
             }
-            image_clone.set_pixbuf(Some(&screenshot()));
+            let pixbuf = screenshot();
+            window.set_pixbuf(pixbuf.clone());
+            image_clone.set_pixbuf(Some(&pixbuf));
             window.imp().menubar.imp().edit.show();
             window.show();
             window.present();
@@ -227,9 +234,10 @@ impl MainWindow {
                 }
             }),
         );*/
-
+        let window = self.clone();
         gesture_click_clone.connect_pressed(
             clone!(@strong crop_mode_active, @strong crop_area => move |_, _, x, y| {
+                println!("PIXBUF: {}, {}", window.imp().pixbuf.clone().into_inner().width(), window.imp().pixbuf.clone().into_inner().height() );
 
                 if *crop_mode_active.borrow() {
                     let mut area = crop_area.borrow_mut();
