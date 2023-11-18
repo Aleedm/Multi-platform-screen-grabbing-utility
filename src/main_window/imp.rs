@@ -5,6 +5,14 @@ use gtk::{
 };
 use gtk4 as gtk;
 use std::cell::RefCell;
+#[derive(Debug)]
+#[derive(Clone)]
+pub struct ImageOffset {
+    pub x: i64,
+    pub y: i64,
+    pub aspect_ratio: f64,
+}
+
 
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, gtk::CompositeTemplate)]
@@ -22,6 +30,8 @@ pub struct MainWindow {
     pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
     pub appl: RefCell<gtk::Application>,
+
+    pub image_offset: RefCell<ImageOffset>
 }
 
 impl Default for MainWindow {
@@ -31,7 +41,8 @@ impl Default for MainWindow {
             image: Default::default(),
             appl: Default::default(),
             drawing_area: Default::default(),
-            overlay: Default::default()
+            overlay: Default::default(),
+            image_offset: RefCell::new(ImageOffset { x: 0, y: 0, aspect_ratio: 0.0 }),
         }
     }
 }
@@ -69,6 +80,7 @@ impl ObjectImpl for MainWindow {
         self.obj().save_action_setup();
         self.obj().copy_action_setup();
         self.obj().crop_action_setup();
+        self.obj().setup_size_allocate();
     }
 }
 
