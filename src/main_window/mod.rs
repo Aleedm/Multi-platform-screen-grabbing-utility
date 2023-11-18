@@ -14,6 +14,8 @@ use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
 use std::{borrow::Cow, cell::RefCell};
+
+use self::imp::ImageOffset;
 use gtk::gdk_pixbuf::Pixbuf;
 
 glib::wrapper! {
@@ -22,7 +24,7 @@ glib::wrapper! {
     @implements gio::ActionMap, gio::ActionGroup;
 }
 #[derive(Clone)]
-struct CropArea {
+pub struct CropArea {
     start_x: f64,
     start_y: f64,
     end_x: f64,
@@ -173,8 +175,10 @@ impl MainWindow {
     }
 
     pub fn crop_action_setup(&self) {
-        //let window = self.clone();
+        let window = self.clone();
         let crop = gio::SimpleAction::new("crop", None);
+
+        let picture = self.imp().image.clone();
 
         let drawing_area = self.imp().drawing_area.clone();
         let drawing_area_clone = drawing_area.clone();
@@ -234,11 +238,18 @@ impl MainWindow {
                 }
             }),
         );*/
-        let window = self.clone();
+        let window = self.clone();        
         gesture_click_clone.connect_pressed(
-            clone!(@strong crop_mode_active, @strong crop_area => move |_, _, x, y| {
+            clone!(@strong crop_mode_active, @strong crop_area, @strong drawing_area_clone, => move |_, _, x, y| {
                 println!("PIXBUF: {}, {}", window.imp().pixbuf.clone().into_inner().width(), window.imp().pixbuf.clone().into_inner().height() );
-
+                eprintln!("picture dimensions: {:?} {:?}", picture.width(), picture.height());
+                eprintln!("drawing_area dimensions: {:?} {:?}", drawing_area_clone.width(), drawing_area_clone.height());
+                //let paintable = picture.paintable().unwrap();
+                //eprintln!("paintable dimensions: {:?} {:?}", paintable.intrinsic_width(), paintable.intrinsic_height());
+                //eprintln!("paintable size: {:?}", paintable.intrinsic_aspect_ratio());
+                let image_offset = window.imp().image_offset.clone();
+                eprintln!("image_offset: {:?}", image_offset);
+                eprintln!("x: {}, y: {}", x, y);
                 if *crop_mode_active.borrow() {
                     let mut area = crop_area.borrow_mut();
                     area.start_x = x;
@@ -262,5 +273,47 @@ impl MainWindow {
         }));
 
         self.add_action(&crop);
+    }
+
+    pub fn set_image_offset(&self, new_offset: ImageOffset) {
+        let imp = self.imp();
+        *imp.image_offset.borrow_mut() = new_offset;
+    }
+
+    pub fn setup_size_allocate(&self) {
+        let drawing_area = self.imp().drawing_area.clone();
+        let image = self.imp().image.clone();
+        let window = self.clone();
+
+        drawing_area.connect_resize(move |_, width, height| {
+            let paintable = image.paintable();
+            if let Some(pain) = paintable {
+                println!("Paintable dimensioni: {:?}", pain.intrinsic_aspect_ratio());
+                let image_offset = calculate_image_dimension(
+                    width,
+                    height,
+                    pain.intrinsic_aspect_ratio(),
+                );
+                window.set_image_offset(image_offset);
+            }
+        });
+    }
+}
+
+fn calculate_image_dimension(width: i32, height: i32, aspect_ratio: f64) -> ImageOffset {
+    let x = (width as f64 - (height as f64 * aspect_ratio)) / 2.0;
+    if x > 0.0 {
+        ImageOffset {
+            x: x as i64,
+            y: 0,
+            aspect_ratio: aspect_ratio,
+        }
+    } else {
+        let y = (height as f64 - (width as f64 / aspect_ratio)) / 2.0;
+        ImageOffset {
+            x: 0,
+            y: y as i64,
+            aspect_ratio: aspect_ratio,
+        }
     }
 }
