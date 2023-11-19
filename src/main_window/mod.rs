@@ -1,24 +1,30 @@
 mod imp;
-use gtk::glib::clone;
-use gtk::{gdk, GestureClick, GestureDrag};
+use gtk::glib::{clone, VariantType};
 use gtk::{
-    gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt, FileChooserAction,
-    FileChooserDialog, ResponseType,
-};
+    gdk, 
+    GestureClick, 
+    GestureDrag,
+    gio, 
+    glib, 
+    prelude::*, 
+    subclass::prelude::ObjectSubclassIsExt, 
+    FileChooserAction,
+    FileChooserDialog, 
+    ResponseType,
+    gdk_pixbuf::Pixbuf};
 use screenshots::image::EncodableLayout;
-
-use crate::screenshot::screenshot;
 use arboard::{Clipboard, ImageData};
-use glib::VariantType;
 use gtk4 as gtk;
-use std::cmp::{min, max};
-use std::rc::Rc;
-use std::thread;
-use std::time::Duration;
-use std::{borrow::Cow, cell::RefCell};
+use std::{borrow::Cow, 
+    cell::RefCell,
+    path::PathBuf,
+    time::Duration,
+    thread,
+    cmp::{min, max},
+    rc::Rc};
 
 use self::imp::ImageOffset;
-use gtk::gdk_pixbuf::Pixbuf;
+use crate::screenshot::screenshot;
 
 glib::wrapper! {
     pub struct MainWindow(ObjectSubclass<imp::MainWindow>)
@@ -118,8 +124,8 @@ impl MainWindow {
         let save_screen = gio::SimpleAction::new("save_screen", None);
 
         let window = self.clone();
-        //let image_clone = self.imp().image.clone();
-        save_screen.connect_activate(glib::clone!(@weak window =>move |_, _| {
+        save_screen.connect_activate(move |_, _| {
+            let pixbuf_clone = window.imp().pixbuf.clone().into_inner();
             // Apri la finestra di dialogo per salvare l'immagine
             let dialog = FileChooserDialog::new(
                 Some("Save Image"),
@@ -136,17 +142,22 @@ impl MainWindow {
 
             // Mostra la finestra di dialogo e attendi la risposta dell'utente
             dialog.show();
-
-            dialog.run_async(|obj, answer| {
-                if answer == ResponseType::Accept{
-                    if let Some(file_path) = obj.current_name() {
-                        println!("Salvataggio dell'immagine in: {:?}", file_path);
-
+            dialog.run_async(clone!(@strong pixbuf_clone => move |obj, answer| {
+                if answer == ResponseType::Accept {
+                    if let Some(filename) = obj.current_name() {
+                        let mut path = PathBuf::from(obj.current_folder().unwrap().path().unwrap());
+                        path.push(filename);
+                        println!("Salvataggio dell'immagine in: {:?}", path);
+                        
+                        if let Err(err) = pixbuf_clone.savev(&path, "png", &[]) {
+                            eprintln!("Errore nel salvataggio dell'immagine: {}", err);
+                        }
                     }
                 }
                 obj.close();
-            });
-        }));
+            }));
+
+        });
 
         self.add_action(&save_screen);
     }
