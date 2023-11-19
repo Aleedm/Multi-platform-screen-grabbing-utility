@@ -5,6 +5,7 @@ use gtk::{
     gio, glib, prelude::*, subclass::prelude::ObjectSubclassIsExt, FileChooserAction,
     FileChooserDialog, ResponseType,
 };
+use screenshots::image::EncodableLayout;
 
 use crate::screenshot::screenshot;
 use arboard::{Clipboard, ImageData};
@@ -154,26 +155,17 @@ impl MainWindow {
         // Crea l'azione
         let copy_screen = gio::SimpleAction::new("copy_screen", None);
 
-        //let window = self.clone();
-        //let image_clone = self.imp().image.clone();
+        let window = self.clone();
         copy_screen.connect_activate(move |_, _| {
             //Copy image to clipboard
             let mut clipboard = Clipboard::new().unwrap();
-            let buf = screenshot();
-            let glib_bytes = buf.pixel_bytes();
-            // Ottieni un puntatore ai dati e convertilo in una fetta di byte
-            let slice = unsafe {
-                std::slice::from_raw_parts(
-                    glib_bytes.clone().unwrap().as_ptr() as *const u8,
-                    glib_bytes.clone().unwrap().len(),
-                )
-            };
+            let pixbuf: Pixbuf = window.imp().pixbuf.clone().into_inner();
+            let bytes = pixbuf.pixel_bytes().unwrap();
 
-            let bytes1 = Cow::Borrowed(slice);
             let img_data = ImageData {
-                width: buf.width() as usize,
-                height: buf.height() as usize,
-                bytes: bytes1.clone(),
+                width: pixbuf.width() as usize,
+                height: pixbuf.height() as usize,
+                bytes: Cow::Borrowed(bytes.as_bytes()),
             };
             clipboard.set_image(img_data).unwrap();
         });
