@@ -84,6 +84,7 @@ impl ObjectImpl for MainWindow {
         self.obj().crop_action_setup();
         self.obj().setup_size_allocate();
         self.obj().exit_action_setup();
+        self.obj().confirm_action_setup();
     }
 }
 

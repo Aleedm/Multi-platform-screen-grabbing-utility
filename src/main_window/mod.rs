@@ -38,15 +38,19 @@ impl MainWindow {
         glib::Object::builder().property("application", app).build()
     }
 
+    /* Function to set the application */
     pub fn set_application(&self, new_app: gtk::Application) {
         let imp = self.imp();
         *imp.appl.borrow_mut() = new_app;
     }
+
+    /* Function to update the current pixbuf value */
     pub fn set_pixbuf(&self, new_pixbuf: Pixbuf) {
         let imp = self.imp();
         *imp.pixbuf.borrow_mut() = new_pixbuf;
     }
 
+    /* "set_delay" action to set new delay value */
     pub fn delay_action_setup(&self) {
         // Create the action for setting delay and add it to the window
         let set_delay = gio::SimpleAction::new("set_delay", Some(&VariantType::new("t").unwrap()));
@@ -68,8 +72,8 @@ impl MainWindow {
         self.add_action(&set_delay);
     }
 
+    /* "Exit" action to exit from crop mode */
     pub fn exit_action_setup(&self) {
-        // Create the action for setting delay and add it to the window
         let exit = gio::SimpleAction::new("exit", None);
 
         let window = self.clone();
@@ -80,6 +84,19 @@ impl MainWindow {
         self.add_action(&exit);
     }
 
+    /* "Confrim" action to confirm area you want to crop */
+    pub fn confirm_action_setup(&self) {
+        let confirm = gio::SimpleAction::new("confirm", None);
+
+        let window = self.clone();
+        confirm.connect_activate(move |_, _| {
+            window.imp().cropbar.hide();
+            window.imp().menubar.show();
+        });
+        self.add_action(&confirm);
+    }
+
+    /* "new_screen" action to add a screenshot to the window */
     pub fn screen_action_setup(&self) {
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
@@ -118,6 +135,8 @@ impl MainWindow {
         self.add_action(&new_screen);
     }
 
+    
+    /* Function to update shortcut for new screenshot action */
     pub fn update_shortcut(&self, values: &[&str]) {
         self.imp()
             .appl
@@ -125,6 +144,7 @@ impl MainWindow {
             .set_accels_for_action("win.new_screen", values);
     }
 
+    /* "save_screen" action to save the current screenshot */
     pub fn save_action_setup(&self) {
         // Crea l'azione
         let save_screen = gio::SimpleAction::new("save_screen", None);
@@ -168,6 +188,7 @@ impl MainWindow {
         self.add_action(&save_screen);
     }
 
+    /* "copy_screen" action to copy the current screenshot to the clipboard*/
     pub fn copy_action_setup(&self) {
         // Crea l'azione
         let copy_screen = gio::SimpleAction::new("copy_screen", None);
@@ -245,17 +266,6 @@ impl MainWindow {
             }),
         );
 
-        // Gestione del click del mouse
-        /*gesture_drag_clone.connect_drag_begin(
-            clone!(@strong crop_mode_active,@strong crop_area => move | _, x, y| {
-                eprintln!("pressed, crop_mode_active: {}", *crop_mode_active.borrow());
-                if *crop_mode_active.borrow() {
-                    let mut area = crop_area.borrow_mut();
-                    area.start_x = x;
-                    area.start_y = y;
-                }
-            }),
-        );*/
         let window_1 = self.clone();
         gesture_click_clone.connect_pressed(
             clone!(@strong crop_mode_active, @strong crop_area, @strong drawing_area_clone, => move |_, _, x, y| {

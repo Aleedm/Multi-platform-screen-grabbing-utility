@@ -3,15 +3,10 @@
   <template class="CropMenuBar" parent="GtkBox">
   <!-- Confirm crop -->
     <child>
-      <object class="GtkLabel" id="label">
-      <property name="label" translatable="yes">Select cropping area </property>
-      </object>
-    </child>
-    <child>
       <object class="GtkButton" id="confirm">
       <property name="label" translatable="yes">Confirm </property>
       <property name="tooltip-text" translatable="yes">Confirm crop</property>
-      <property name="action-name">win.corfirm</property>
+      <property name="action-name">win.confirm</property>
       </object>
     </child> 
   <!-- Exit from crop mode -->
