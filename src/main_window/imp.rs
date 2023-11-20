@@ -1,13 +1,15 @@
-use crate::first_menu_bar::FirstMenuBar;
 use crate::crop_menu_bar::CropMenuBar;
+use crate::utility::ImageOffset;
+use crate::{first_menu_bar::FirstMenuBar, utility::CropArea};
+use gtk::gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::{
     glib::{self},
-    subclass::prelude::*, prelude::WidgetExt,
+    prelude::WidgetExt,
+    subclass::prelude::*,
 };
 use gtk4 as gtk;
 use std::cell::RefCell;
-use gtk::gdk_pixbuf::{Pixbuf, Colorspace};
-use crate::utility::ImageOffset;
+use std::rc::Rc;
 
 /// The private struct, which can hold widgets and other data.
 #[derive(Debug, gtk::CompositeTemplate)]
@@ -30,7 +32,11 @@ pub struct MainWindow {
 
     pub pixbuf: RefCell<Pixbuf>,
 
-    pub image_offset: RefCell<ImageOffset>
+    pub image_offset: RefCell<ImageOffset>,
+
+    pub crop_area: RefCell<CropArea>,
+
+    pub crop_mode_active: Rc<RefCell<bool>>,
 }
 
 impl Default for MainWindow {
@@ -43,7 +49,9 @@ impl Default for MainWindow {
             drawing_area: Default::default(),
             overlay: Default::default(),
             pixbuf: RefCell::new(Pixbuf::new(Colorspace::Rgb, true, 8, 10, 10).unwrap()),
-            image_offset: RefCell::new(ImageOffset { x: 0, y: 0, aspect_ratio: 0.0 })
+            image_offset: RefCell::new(ImageOffset::new()),
+            crop_area: RefCell::new(CropArea::new()),
+            crop_mode_active: Rc::new(RefCell::new(false)),
         }
     }
 }
