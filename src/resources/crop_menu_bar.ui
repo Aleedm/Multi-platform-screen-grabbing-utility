@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="CropMenuBar" parent="GtkBox">
+  <!-- Confirm crop -->
+    <child>
+      <object class="GtkLabel" id="label">
+      <property name="label" translatable="yes">Select cropping area </property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="confirm">
+      <property name="label" translatable="yes">Confirm </property>
+      <property name="tooltip-text" translatable="yes">Confirm crop</property>
+      <property name="action-name">win.corfirm</property>
+      </object>
+    </child> 
+  <!-- Exit from crop mode -->
+    <child>
+      <object class="GtkButton" id="exit">
+      <property name="label" translatable="yes">Exit</property>
+      <property name="tooltip-text" translatable="yes">Exit from crop mode</property>
+      <property name="action-name">win.exit</property>
+      </object>
+    </child>   
+  </template>
+</interface>
+

@@ -74,6 +74,17 @@ impl MainWindow {
         self.add_action(&set_delay);
     }
 
+    pub fn exit_action_setup(&self) {
+        // Create the action for setting delay and add it to the window
+        let exit = gio::SimpleAction::new("exit", None);
+
+        let window = self.clone();
+        exit.connect_activate(move |_, _| {
+            window.imp().cropbar.hide();
+            window.imp().menubar.show();
+        });
+    }
+
     pub fn screen_action_setup(&self) {
         // Create the action for setting delay and add it to the window
         let new_screen = gio::SimpleAction::new("new_screen", None);
@@ -221,10 +232,12 @@ impl MainWindow {
             let _ =cr.stroke();
         }));
 
+        let window = self.clone();
         crop.connect_activate(
             clone!(@strong crop_mode_active, @strong crop_area => move |_, _| {
                 *crop_mode_active.borrow_mut() = true;
-
+                window.imp().menubar.hide();
+                window.imp().cropbar.show();
                 // Resetta l'area di selezione
                 let mut area = crop_area.borrow_mut();
                 *area = CropArea {

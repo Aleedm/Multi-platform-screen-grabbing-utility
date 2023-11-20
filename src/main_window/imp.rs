@@ -1,7 +1,8 @@
 use crate::first_menu_bar::FirstMenuBar;
+use crate::crop_menu_bar::CropMenuBar;
 use gtk::{
     glib::{self},
-    subclass::prelude::*,
+    subclass::prelude::*, prelude::WidgetExt,
 };
 use gtk4 as gtk;
 use std::cell::RefCell;
@@ -24,6 +25,8 @@ pub struct MainWindow {
     #[template_child]
     pub menubar: TemplateChild<FirstMenuBar>,
     #[template_child]
+    pub cropbar: TemplateChild<CropMenuBar>,
+    #[template_child]
     pub image: TemplateChild<gtk::Picture>,
     #[template_child]
     pub overlay: TemplateChild<gtk::Overlay>,
@@ -41,6 +44,7 @@ impl Default for MainWindow {
     fn default() -> Self {
         Self {
             menubar: Default::default(),
+            cropbar: Default::default(),
             image: Default::default(),
             appl: Default::default(),
             drawing_area: Default::default(),
@@ -79,6 +83,7 @@ impl UtilityCallbacks {}
 impl ObjectImpl for MainWindow {
     fn constructed(&self) {
         self.parent_constructed();
+        self.cropbar.hide();
         self.obj().delay_action_setup();
         self.obj().screen_action_setup();
         self.obj().save_action_setup();

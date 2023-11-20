@@ -4,6 +4,7 @@
     <file preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">help_overlay.ui</file>
     <file preprocess="xml-stripblanks">first_menu_bar.ui</file>
     <file preprocess="xml-stripblanks">edit_menu_bar.ui</file>
+    <file preprocess="xml-stripblanks">crop_menu_bar.ui</file>
     <file preprocess="xml-stripblanks">main_window.ui</file>
   </gresource>
 </gresources>

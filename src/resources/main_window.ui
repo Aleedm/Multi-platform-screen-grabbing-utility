@@ -20,6 +20,9 @@
         <child>
           <object class="FirstMenuBar" id="menubar"/>
         </child>
+        <child>
+          <object class="CropMenuBar" id="cropbar"/>
+        </child>
 
         <child>
           <object class="GtkOverlay" id="overlay">
