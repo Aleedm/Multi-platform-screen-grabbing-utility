@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="EditShortCut" parent="GtkBox">
+  <!-- Edit -->
+    <child>
+      <object class="GtkButton" id="edit">
+      <property name="label" translatable="yes">Edit</property>
+      <property name="tooltip-text" translatable="yes">Edit shortcut</property>
+      <property name="action-name">win.edit_shortcut</property>
+      </object>
+    </child> 
+    <!-- Save -->
+    <child>
+      <object class="GtkButton" id="save">
+      <property name="label" translatable="yes">Save</property>
+      <property name="tooltip-text" translatable="yes">Save new shortcut</property>
+      <property name="action-name">win.save_shortcut</property>
+      </object>
+    </child>
+    <!-- Discard -->
+    <child>
+      <object class="GtkButton" id="discard">
+      <property name="label" translatable="yes">Discard</property>
+      <property name="tooltip-text" translatable="yes">Discard changes</property>
+      <property name="action-name">win.discard_shortcut</property>
+      </object>
+    </child>   
+  </template>
+</interface>
+

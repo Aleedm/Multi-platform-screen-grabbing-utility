@@ -23,6 +23,9 @@
         <child>
           <object class="CropMenuBar" id="cropbar"/>
         </child>
+        <child>
+          <object class="EditShortCut" id="prova"/>
+        </child>
 
         <child>
           <object class="GtkOverlay" id="overlay">

@@ -1,5 +1,6 @@
 use crate::first_menu_bar::FirstMenuBar;
 use crate::crop_menu_bar::CropMenuBar;
+use crate::edit_shortcut::EditShortCut;
 use gtk::{
     glib::{self},
     subclass::prelude::*, prelude::WidgetExt,
@@ -17,6 +18,8 @@ pub struct MainWindow {
     // that a field is meant to be a child within the template.
     #[template_child]
     pub menubar: TemplateChild<FirstMenuBar>,
+    #[template_child]
+    pub prova: TemplateChild<EditShortCut>,
     #[template_child]
     pub cropbar: TemplateChild<CropMenuBar>,
     #[template_child]
@@ -36,6 +39,7 @@ pub struct MainWindow {
 impl Default for MainWindow {
     fn default() -> Self {
         Self {
+            prova: Default::default(),
             menubar: Default::default(),
             cropbar: Default::default(),
             image: Default::default(),
@@ -77,6 +81,7 @@ impl ObjectImpl for MainWindow {
     fn constructed(&self) {
         self.parent_constructed();
         self.cropbar.hide();
+        self.prova.hide();
         self.obj().delay_action_setup();
         self.obj().screen_action_setup();
         self.obj().save_action_setup();
