@@ -53,6 +53,10 @@ impl MainWindow {
         *imp.crop_area.borrow_mut() = new_crop_area;
     }
 
+    pub fn set_crop_mode_active(&self, new_crop_mode_active: bool) {
+        let imp = self.imp();
+        *imp.crop_mode_active.borrow_mut() = new_crop_mode_active;
+    }
     /* "set_delay" action to set new delay value */
     pub fn delay_action_setup(&self) {
         // Create the action for setting delay and add it to the window
@@ -81,8 +85,14 @@ impl MainWindow {
 
         let window = self.clone();
         exit.connect_activate(move |_, _| {
+            window.set_crop_mode_active(false);
+            let area = CropArea::new();
+            window.set_crop_area(area);
+            
             window.imp().cropbar.hide();
             window.imp().menubar.show();
+            let drawing_area = window.imp().drawing_area.clone();
+            drawing_area.queue_draw();
         });
         self.add_action(&exit);
     }
@@ -93,12 +103,74 @@ impl MainWindow {
 
         let window = self.clone();
         confirm.connect_activate(move |_, _| {
+            let mut area = window.imp().crop_area.borrow_mut();
+            println!("area: {:?}", area);
+            //check if the area of the rectangle is bigger than 0
+            let crop_mode_active = window.imp().crop_mode_active.clone();
+            if *crop_mode_active.borrow() && area.get_start_x() != area.get_end_x() && area.get_start_y() != area.get_end_y(){
+                println!("MUOIOOOOOOO");
+                *crop_mode_active.borrow_mut() = false;
+                
+                let offset_x = window.imp().image_offset.borrow().get_x();
+                let offset_y = window.imp().image_offset.borrow().get_y();
+
+                let x_start_temp = min(area.get_start_x(), area.get_end_x()) - offset_x;
+                let y_start_temp = min(area.get_start_y(), area.get_end_y()) - offset_y;
+                let x_end_temp = max(area.get_start_x(), area.get_end_x()) - offset_x;
+                let y_end_temp = max(area.get_start_y(), area.get_end_y()) - offset_y;
+                
+                let pixbuf = window.imp().pixbuf.clone().into_inner();
+                let image = window.imp().image.clone();
+
+                let width_pixbuf = pixbuf.width() as i64;
+                let height_pixbuf = pixbuf.height() as i64;
+                let width_image = image.width() as i64 - (offset_x * 2);
+                let height_image = image.height() as i64 - (offset_y * 2);
+
+                let x_start = ((x_start_temp as f64 / width_image as f64) * width_pixbuf as f64).round() as i64;
+                let y_start = ((y_start_temp as f64 / height_image as f64) * height_pixbuf as f64).round() as i64;
+                let x_end = ((x_end_temp as f64 / width_image as f64) * width_pixbuf as f64).round() as i64;
+                let y_end = ((y_end_temp as f64 / height_image as f64) * height_pixbuf as f64).round() as i64;
+
+                let width = x_end - x_start;
+                let height = y_end - y_start;
+
+
+                let cropped_pixbuf = Pixbuf::new(pixbuf.colorspace(), pixbuf.has_alpha(), pixbuf.bits_per_sample(), width as i32, height as i32).unwrap();
+                pixbuf.copy_area(x_start as i32, y_start as i32, width as i32, height as i32, &cropped_pixbuf, 0, 0);
+                let image = window.imp().image.clone();
+                image.set_pixbuf(Some(&cropped_pixbuf));
+                window.set_pixbuf(cropped_pixbuf.clone());
+                let paintable = image.paintable();
+                if let Some(pain) = paintable {
+                    let image_offset = calculate_image_dimension(image.width(), image.height(), pain.intrinsic_aspect_ratio());
+                    window.set_image_offset(image_offset);
+                }
+            }
+
+            area.set_start_x(0);
+            area.set_start_y(0);
+            area.set_end_x(0);
+            area.set_end_y(0);
+            let drawing_a = window.imp().drawing_area.clone();
+            drawing_a.queue_draw();
+            window.set_crop_mode_active(false);
+            
             window.imp().cropbar.hide();
             window.imp().menubar.show();
         });
         self.add_action(&confirm);
     }
-
+    pub fn update_confirm_action_state(&self) {
+        let crop_area = self.imp().crop_area.borrow();
+        let is_invalid = is_crop_area_invalid(&crop_area);
+    
+        if let Some(action) = self.lookup_action("confirm") {
+            if let Some(confirm_action) = action.downcast_ref::<gio::SimpleAction>() {
+                confirm_action.set_enabled(!is_invalid);
+            }
+        }
+    }
     /* "new_screen" action to add a screenshot to the window */
     pub fn screen_action_setup(&self) {
         // Create the action for setting delay and add it to the window
@@ -232,8 +304,6 @@ impl MainWindow {
         drawing_area.add_controller(gesture_drag);
         drawing_area.add_controller(gesture_click);
 
-        let crop_mode_active = self.imp().crop_mode_active.clone();
-
         // Impostazione della funzione di disegno
         let window_1 = self.clone();
         drawing_area.set_draw_func(move |_, cr, _, _| {
@@ -246,26 +316,27 @@ impl MainWindow {
         });
 
         let window_2 = self.clone();
-        crop.connect_activate(
-            clone!(@strong crop_mode_active => move |_, _| {
-                *crop_mode_active.borrow_mut() = true;
+        crop.connect_activate(move |_, _| {
+                window_2.set_crop_mode_active(true);
                 window_2.imp().menubar.hide();
                 window_2.imp().cropbar.show();
                 // Resetta l'area di selezione
                 window_2.set_crop_area(CropArea::new());
                 drawing_area.queue_draw();
-            }),
+                window_2.update_confirm_action_state();
+            },
         );
 
         let window_3 = self.clone();
         gesture_click_clone.connect_pressed(
-            clone!(@strong crop_mode_active, @strong drawing_area_clone, => move |_, _, x, y| {
+            clone!(@strong drawing_area_clone, => move |_, _, x, y| {
                 println!("PIXBUF: {}, {}", window_3.imp().pixbuf.clone().into_inner().width(), window_3.imp().pixbuf.clone().into_inner().height() );
                 eprintln!("picture dimensions: {:?} {:?}", picture.width(), picture.height());
                 eprintln!("drawing_area dimensions: {:?} {:?}", drawing_area_clone.width(), drawing_area_clone.height());
                 let image_offset = window_3.imp().image_offset.clone();
                 eprintln!("image_offset: {:?}", image_offset);
                 eprintln!("x: {}, y: {}", x, y);
+                let crop_mode_active = window_3.imp().crop_mode_active.clone();
                 if *crop_mode_active.borrow() && x >= image_offset.borrow().get_x() as f64 && y >= image_offset.borrow().get_y() as f64 
                 && x <= (picture.width() as i64 - image_offset.borrow().get_x()) as f64 && y <= (picture.height() as i64 - image_offset.borrow().get_y()) as f64{
                     print!("click");
@@ -279,12 +350,13 @@ impl MainWindow {
         // Gestione del rilascio del mouse
         let window_3 = self.clone();
         gesture_drag_clone.connect_drag_update(
-            clone!(@strong crop_mode_active, @strong drawing_area_clone => move |_, offset_x, offset_y| {
+            clone!(@strong drawing_area_clone => move |_, offset_x, offset_y| {
                 //println!("drag update");
-                let image_offset = window_3.imp().image_offset.clone();
+                {let image_offset = window_3.imp().image_offset.clone();
                 let image = window_3.imp().image.clone();
                 let mut area = window_3.imp().crop_area.borrow_mut();
                 //println!("area: {:?}", area);
+                let crop_mode_active = window_3.imp().crop_mode_active.clone();
                 if *crop_mode_active.borrow() && area.get_start_x() >= image_offset.borrow().get_x() && area.get_start_y() >= image_offset.borrow().get_y()
                 && area.get_start_x() <= (image.width() as i64-image_offset.borrow().get_x()) && area.get_start_y() <= (image.height() as i64 -image_offset.borrow().get_y()){
                     let end_x = min(max(area.get_start_x() + offset_x as i64, image_offset.borrow().get_x()), image.width() as i64 - image_offset.borrow().get_x());
@@ -292,14 +364,17 @@ impl MainWindow {
                     let end_y = min(max(area.get_start_y() + offset_y as i64, image_offset.borrow().get_y()), image.height() as i64 - image_offset.borrow().get_y());
                     area.set_end_y(end_y);
                     drawing_area_clone.queue_draw();
-                }
+                }}
+
+                window_3.update_confirm_action_state();
             }));
-        let window_4 = self.clone();
-        gesture_drag_clone.connect_drag_end(clone!(@strong crop_mode_active => move |_, _, _| {
+        //let window_4 = self.clone();
+        /*gesture_drag_clone.connect_drag_end(move |_, _, _| {
             println!("drag end");
             let mut area = window_4.imp().crop_area.borrow_mut();
             println!("area: {:?}", area);
             //check if the area of the rectangle is bigger than 0
+            let crop_mode_active = window_4.imp().crop_mode_active.clone();
             if *crop_mode_active.borrow() && area.get_start_x() != area.get_end_x() && area.get_start_y() != area.get_end_y(){
                 println!("MUOIOOOOOOO");
                 *crop_mode_active.borrow_mut() = false;
@@ -347,7 +422,7 @@ impl MainWindow {
             area.set_end_y(0);
             let drawing_a = window_4.imp().drawing_area.clone();
             drawing_a.queue_draw();
-        }));
+        });*/
 
         self.add_action(&crop);
     }
@@ -382,4 +457,11 @@ fn calculate_image_dimension(width: i32, height: i32, aspect_ratio: f64) -> Imag
         let y = (height as f64 - (width as f64 / aspect_ratio)) / 2.0;
         ImageOffset::new_with_params(0, y as i64, aspect_ratio)
     }
+}
+
+
+fn is_crop_area_invalid(crop_area: &CropArea) -> bool {
+    crop_area.get_start_x() == crop_area.get_end_x() ||
+    crop_area.get_start_y() == crop_area.get_end_y() ||
+    (crop_area.get_start_x() == 0 && crop_area.get_start_y() == 0 && crop_area.get_end_x() == 0 && crop_area.get_end_y() == 0)
 }
