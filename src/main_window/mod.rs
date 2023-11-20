@@ -1,5 +1,6 @@
 mod imp;
 use gtk::glib::{clone, VariantType};
+use gtk::prelude::PixbufAnimationExt;
 use gtk::{
     gdk, 
     GestureClick, 
@@ -335,8 +336,8 @@ impl MainWindow {
                 let height = y_end - y_start;
 
 
-                let cropped_pixbuf = pixbuf.new_subpixbuf(x_start as i32, y_start as i32, width as i32, height as i32);
-
+                let cropped_pixbuf = Pixbuf::new(pixbuf.colorspace(), pixbuf.has_alpha(), pixbuf.bits_per_sample(), width as i32, height as i32).unwrap();
+                pixbuf.copy_area(x_start as i32, y_start as i32, width as i32, height as i32, &cropped_pixbuf, 0, 0);
                 let image = window_3.imp().image.clone();
                 image.set_pixbuf(Some(&cropped_pixbuf));
                 window_3.set_pixbuf(cropped_pixbuf.clone());
