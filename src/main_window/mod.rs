@@ -285,7 +285,7 @@ impl MainWindow {
         let window_3 = self.clone();
         gesture_drag_clone.connect_drag_end(clone!(@strong crop_mode_active, @strong crop_area => move |_, _, _| {
             println!("drag end");
-            let area = crop_area.borrow();
+            let mut area = crop_area.borrow_mut();
             println!("area: {:?}", area);
             //check if the area of the rectangle is bigger than 0
             if *crop_mode_active.borrow() && area.start_x != area.end_x && area.start_y != area.end_y{
@@ -295,10 +295,10 @@ impl MainWindow {
                 let offset_x = window_3.imp().image_offset.borrow().x;
                 let offset_y = window_3.imp().image_offset.borrow().y;
 
-                let x_start_temp = min(crop_area.borrow().start_x, crop_area.borrow().end_x) - offset_x;
-                let y_start_temp = min(crop_area.borrow().start_y, crop_area.borrow().end_y) - offset_y;
-                let x_end_temp = max(crop_area.borrow().start_x, crop_area.borrow().end_x) - offset_x;
-                let y_end_temp = max(crop_area.borrow().start_y, crop_area.borrow().end_y) - offset_y;
+                let x_start_temp = min(area.start_x, area.end_x) - offset_x;
+                let y_start_temp = min(area.start_y, area.end_y) - offset_y;
+                let x_end_temp = max(area.start_x, area.end_x) - offset_x;
+                let y_end_temp = max(area.start_y, area.end_y) - offset_y;
                 
                 let pixbuf = window_3.imp().pixbuf.clone().into_inner();
                 let image = window_3.imp().image.clone();
@@ -328,6 +328,13 @@ impl MainWindow {
                     window_3.set_image_offset(image_offset);
                 }
             }
+
+            area.start_x = 0;
+            area.start_y = 0;
+            area.end_x = 0;
+            area.end_y = 0;
+            let drawing_a = window_3.imp().drawing_area.clone();
+            drawing_a.queue_draw();
         }));
 
         self.add_action(&crop);
