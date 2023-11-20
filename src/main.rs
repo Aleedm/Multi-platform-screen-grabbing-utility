@@ -5,6 +5,7 @@ pub mod first_menu_bar;
 pub mod edit_menu_bar;
 pub mod crop_menu_bar;
 pub mod screenshot;
+pub mod utility;
 
 use main_window::MainWindow;
 use gtk::{gio, glib, prelude::*};
@@ -24,9 +25,3 @@ fn main() -> glib::ExitCode {
     });
     application.run()
 }
-
-
-/* fn set_new_screen_shortcut(app: &Application, keys:&[&str]){
-    app.set_accels_for_action("win.new_screen", keys);
-    
-} */

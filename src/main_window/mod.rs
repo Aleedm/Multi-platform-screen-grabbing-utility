@@ -23,21 +23,15 @@ use std::{borrow::Cow,
     cmp::{min, max},
     rc::Rc};
 
-use self::imp::ImageOffset;
 use crate::screenshot::screenshot;
+use crate::utility::{ImageOffset, CropArea};
 
 glib::wrapper! {
     pub struct MainWindow(ObjectSubclass<imp::MainWindow>)
     @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow,
     @implements gio::ActionMap, gio::ActionGroup;
 }
-#[derive(Clone, Debug)]
-pub struct CropArea {
-    start_x: i64,
-    start_y: i64,
-    end_x: i64,
-    end_y: i64,
-}
+
 
 impl MainWindow {
     pub fn new<P: IsA<gtk::Application>>(app: &P) -> Self {
@@ -83,6 +77,7 @@ impl MainWindow {
             window.imp().cropbar.hide();
             window.imp().menubar.show();
         });
+        self.add_action(&exit);
     }
 
     pub fn screen_action_setup(&self) {
