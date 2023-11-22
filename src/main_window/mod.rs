@@ -42,21 +42,41 @@ impl MainWindow {
         *imp.appl.borrow_mut() = new_app;
     }
 
+    /* "show_setting" action to show settings modal */
+    pub fn settings_setup(&self){
+        let show_setting = gio::SimpleAction::new("show_setting", None);
+        let window = self.clone();
+        show_setting.connect_activate(move |_, _| {
+            // let settings_dialog:SettingsModal = glib::Object::new().expect("Failed to create Settings Dialog");
+            window.imp().settings.set_transient_for(Some(&window));
+            // settings_dialog.set_modal(true);
+            window.imp().settings.set_modal(true);
+            window.imp().settings.show();
+
+        });
+        self.add_action(&show_setting);
+    
+    
+    }
+
     /* Function to update the current pixbuf value */
     pub fn set_pixbuf(&self, new_pixbuf: Pixbuf) {
         let imp = self.imp();
         *imp.pixbuf.borrow_mut() = new_pixbuf;
     }
 
+    /* Function to update the current CropArea value */
     pub fn set_crop_area(&self, new_crop_area: CropArea) {
         let imp = self.imp();
         *imp.crop_area.borrow_mut() = new_crop_area;
     }
 
+    /* Function to update crop-mode value */
     pub fn set_crop_mode_active(&self, new_crop_mode_active: bool) {
         let imp = self.imp();
         *imp.crop_mode_active.borrow_mut() = new_crop_mode_active;
     }
+
     /* "set_delay" action to set new delay value */
     pub fn delay_action_setup(&self) {
         // Create the action for setting delay and add it to the window

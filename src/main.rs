@@ -2,6 +2,7 @@ use gtk4 as gtk;
 
 mod main_window;
 pub mod first_menu_bar;
+pub mod settings_modal;
 pub mod edit_menu_bar;
 pub mod crop_menu_bar;
 pub mod screenshot;

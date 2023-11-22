@@ -34,6 +34,7 @@
       </item>
       <item>
         <attribute name="label" translatable="yes">Settings</attribute>
+        <attribute name="action">win.show_setting</attribute>
       </item>
     </section>
   </menu>

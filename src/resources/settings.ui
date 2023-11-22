@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="SettingsModal" parent="GtkDialog">
+    <!-- Definisci qui i tuoi widget, ad esempio un bottone -->
+    <child>
+      <object class="GtkButton" id="some_widget">
+        <property name="label">Click Me!</property>
+      </object>
+    </child>
+  </template>
+</interface>
