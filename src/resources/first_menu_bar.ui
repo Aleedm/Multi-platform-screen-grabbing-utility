@@ -33,7 +33,7 @@
         <attribute name="action">win.show-help-overlay</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Save Options</attribute>
+        <attribute name="label" translatable="yes">Settings</attribute>
       </item>
     </section>
   </menu>
@@ -90,14 +90,6 @@
         </property>
       </object>
     </child>
-
-    <!-- Shortcut -->
-    <child>
-      <object class="GtkButton" id="shortcut">
-      <property name="label">shortcut</property>
-      <property name="action-name">win.show-help-overlay</property>
-      </object>
-    </child>       
 
     <!-- EditMenu -->
     <child>

@@ -11,8 +11,6 @@ pub struct FirstMenuBar {
     #[template_child]
     pub delay_label: TemplateChild<gtk::Label>,
     #[template_child]
-    pub shortcut: TemplateChild<gtk::Button>,
-    #[template_child]
     pub edit: TemplateChild<EditMenuBar>,
     pub delay: RefCell<u64>
 }
@@ -22,7 +20,6 @@ impl Default for FirstMenuBar {
         Self {
             add_ss: Default::default(),
             delay_label: Default::default(),
-            shortcut: Default::default(),
             edit: Default::default(),
             delay: RefCell::new(0),
         }
