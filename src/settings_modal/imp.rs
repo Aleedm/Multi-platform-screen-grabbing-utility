@@ -17,7 +17,7 @@ pub struct SettingsModal {
 impl ObjectSubclass for SettingsModal {
     const NAME: &'static str = "SettingsModal";
     type Type = super::SettingsModal;
-    type ParentType = gtk::Window;
+    type ParentType = gtk::ApplicationWindow;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -39,3 +39,4 @@ impl ObjectImpl for SettingsModal {
 impl WidgetImpl for SettingsModal {}
 
 impl WindowImpl for SettingsModal {}
+impl ApplicationWindowImpl for SettingsModal {}

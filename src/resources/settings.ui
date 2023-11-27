@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="SettingsModal" parent="GtkWindow">
+  <template class="SettingsModal" parent="GtkApplicationWindow">
     <!-- Definisci qui i tuoi widget, ad esempio un bottone -->
     <child>
       <object class="GtkBox">

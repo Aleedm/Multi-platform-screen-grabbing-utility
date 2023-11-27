@@ -1,15 +1,15 @@
 mod imp;
-use gtk4 as gtk;
 use gtk::glib::Propagation;
 use gtk::{
     gio,
     glib,
-    prelude::*,
     //glib::{self, subclass::types::ObjectSubclassIsExt, Propagation},
-    prelude::{WidgetExt, ButtonExt},
+    prelude::WidgetExt,
+    prelude::*,
+    subclass::prelude::ObjectSubclassIsExt,
     EventControllerKey,
-    subclass::prelude::ObjectSubclassIsExt
 };
+use gtk4 as gtk;
 
 glib::wrapper! {
     pub struct SettingsModal(ObjectSubclass<imp::SettingsModal>)
@@ -34,9 +34,12 @@ impl SettingsModal {
         entry.add_controller(key_controller);
     }
     pub fn setup_cancel_button(&self) {
-        let cancel = self.imp().button_cancel.clone();
-        cancel.connect_clicked(|_| {
-            println!("BUTTON CLICKED");
-    });
+        let cancel = gio::SimpleAction::new("cancel", None);
+        cancel.connect_activate(move |_, _| {
+            println!("Cancel button pressed");
+        });
+
+        self.add_action(&cancel);
     }
+    
 }

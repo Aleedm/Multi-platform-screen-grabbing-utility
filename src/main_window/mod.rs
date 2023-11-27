@@ -59,7 +59,7 @@ impl MainWindow {
                 settings.focus();
                 settings.show();
                 // Utilizza glib::Cast per eseguire un cast sicuro
-                if let Ok(dialog) = settings.dynamic_cast::<gtk::Window>() {
+                if let Ok(dialog) = settings.dynamic_cast::<gtk::ApplicationWindow>() {
                     dialog.connect_close_request(|dialog| {
                         dialog.hide();
                         Propagation::Proceed
