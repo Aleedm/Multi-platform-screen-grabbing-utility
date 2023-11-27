@@ -14,9 +14,6 @@
     </child>
 
     <child>
-      <object class="SettingsModal" id="settings"/>
-    </child>
-    <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
 

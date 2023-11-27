@@ -31,7 +31,7 @@ impl ObjectSubclass for SettingsModal {
 impl ObjectImpl for SettingsModal {
     fn constructed(&self) {
         self.obj().setup_entry();
-        //self.obj().setup_cancel_button();
+        self.obj().setup_cancel_button();
     }
 }
 

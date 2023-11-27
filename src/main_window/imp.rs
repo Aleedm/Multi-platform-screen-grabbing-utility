@@ -1,5 +1,4 @@
 use crate::crop_menu_bar::CropMenuBar;
-use crate::settings_modal::SettingsModal;
 use crate::utility::ImageOffset;
 use crate::{first_menu_bar::FirstMenuBar, utility::CropArea};
 use crate::settings_manager::Settings;
@@ -29,8 +28,8 @@ pub struct MainWindow {
     pub overlay: TemplateChild<gtk::Overlay>,
     #[template_child]
     pub drawing_area: TemplateChild<gtk::DrawingArea>,
-    #[template_child]
-    pub settings: TemplateChild<SettingsModal>,
+    
+    //pub settings: RefCell<SettingsModal>,
 
     pub appl: RefCell<gtk::Application>,
 
@@ -55,7 +54,7 @@ impl Default for MainWindow {
             appl: Default::default(),
             drawing_area: Default::default(),
             overlay: Default::default(),
-            settings: Default::default(),
+            //settings: Default::default(),
             pixbuf: RefCell::new(Pixbuf::new(Colorspace::Rgb, true, 8, 10, 10).unwrap()),
             image_offset: RefCell::new(ImageOffset::new()),
             crop_area: RefCell::new(CropArea::new()),

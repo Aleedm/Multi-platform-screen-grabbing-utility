@@ -22,6 +22,7 @@ use std::{borrow::Cow,
     cmp::{min, max}};
 
 use crate::screenshot::screenshot;
+use crate::settings_modal::SettingsModal;
 use crate::utility::{ImageOffset, CropArea};
 
 glib::wrapper! {
@@ -48,11 +49,14 @@ impl MainWindow {
         let window = self.clone();
     
         show_setting.connect_activate(move |_, _| {
-            let settings = window.imp().settings.clone();
+            //let settings = window.imp().settings.clone().into();
+            let app = window.imp().appl.clone().into_inner();
+            let settings:SettingsModal = SettingsModal::new(&app);
     
             if !settings.is_visible() {
                 settings.set_transient_for(Some(&window));
                 settings.set_modal(true);
+                settings.focus();
                 settings.show();
                 // Utilizza glib::Cast per eseguire un cast sicuro
                 if let Ok(dialog) = settings.dynamic_cast::<gtk::Window>() {
