@@ -6,10 +6,11 @@ pub mod settings_modal;
 pub mod edit_menu_bar;
 pub mod crop_menu_bar;
 pub mod screenshot;
+pub mod settings_manager;
 pub mod utility;
 
 use main_window::MainWindow;
-use gtk::{gio, glib, prelude::*};
+use gtk::{gio, glib::{self, subclass::types::ObjectSubclassIsExt}, prelude::*};
 fn main() -> glib::ExitCode {
 
     gio::resources_register_include!("compiled.gresource").unwrap();
@@ -21,7 +22,8 @@ fn main() -> glib::ExitCode {
     application.connect_activate(move |app| {
         let win: MainWindow = MainWindow::new(app);
         win.set_application(app.clone());
-        win.update_shortcut(&["<Ctrl>a"]);
+        let shortcut = win.imp().settings_manager.clone().unwrap().get_screen_shortcut();
+        win.update_shortcut(&[&shortcut.as_str()]);
         win.present();
     });
     application.run()

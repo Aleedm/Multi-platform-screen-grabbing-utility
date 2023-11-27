@@ -49,10 +49,9 @@ impl MainWindow {
         show_setting.connect_activate(move |_, _| {
             // let settings_dialog:SettingsModal = glib::Object::new().expect("Failed to create Settings Dialog");
             window.imp().settings.set_transient_for(Some(&window));
-            // settings_dialog.set_modal(true);
             window.imp().settings.set_modal(true);
-            window.imp().settings.show();
-
+            window.imp().settings.grab_focus();
+            window.imp().settings.present();
         });
         self.add_action(&show_setting);
     

@@ -2,6 +2,7 @@ use crate::crop_menu_bar::CropMenuBar;
 use crate::settings_modal::SettingsModal;
 use crate::utility::ImageOffset;
 use crate::{first_menu_bar::FirstMenuBar, utility::CropArea};
+use crate::settings_manager::Settings;
 use gtk::gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::{
     glib::{self},
@@ -41,6 +42,8 @@ pub struct MainWindow {
 
     pub crop_mode_active: Rc<RefCell<bool>>,
 
+    pub settings_manager: Option<Settings>
+
 }
 
 impl Default for MainWindow {
@@ -57,6 +60,7 @@ impl Default for MainWindow {
             image_offset: RefCell::new(ImageOffset::new()),
             crop_area: RefCell::new(CropArea::new()),
             crop_mode_active: Rc::new(RefCell::new(false)),
+            settings_manager: Settings::read_settings("config.json".to_string())
         }
     }
 }
