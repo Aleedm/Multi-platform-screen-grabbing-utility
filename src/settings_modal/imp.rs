@@ -5,7 +5,11 @@ use gtk4 as gtk;
 #[template(resource = "/org/mpsgu/settings.ui")]
 pub struct SettingsModal {
     #[template_child]
-    pub some_widget: TemplateChild<gtk::Button>,
+    pub text: TemplateChild<gtk::Entry>,
+    #[template_child]
+    pub button_cancel: TemplateChild<gtk::Button>,
+    #[template_child]
+    pub button_ok: TemplateChild<gtk::Button>,
     
 }
 
@@ -13,7 +17,7 @@ pub struct SettingsModal {
 impl ObjectSubclass for SettingsModal {
     const NAME: &'static str = "SettingsModal";
     type Type = super::SettingsModal;
-    type ParentType = gtk::Dialog;
+    type ParentType = gtk::Window;
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
@@ -24,11 +28,14 @@ impl ObjectSubclass for SettingsModal {
     }
 }
 // Trait shared by all GObjects
-impl ObjectImpl for SettingsModal {}
+impl ObjectImpl for SettingsModal {
+    fn constructed(&self) {
+        self.obj().setup_entry();
+        //self.obj().setup_cancel_button();
+    }
+}
 
 // Trait shared by all widgets
 impl WidgetImpl for SettingsModal {}
 
 impl WindowImpl for SettingsModal {}
-
-impl DialogImpl for SettingsModal {}

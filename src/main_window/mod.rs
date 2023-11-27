@@ -1,5 +1,5 @@
 mod imp;
-use gtk::glib::{clone, VariantType};
+use gtk::glib::{clone, VariantType, Propagation};
 use gtk::{
     gdk, 
     GestureClick, 
@@ -43,20 +43,30 @@ impl MainWindow {
     }
 
     /* "show_setting" action to show settings modal */
-    pub fn settings_setup(&self){
+    pub fn settings_setup(&self) {
         let show_setting = gio::SimpleAction::new("show_setting", None);
         let window = self.clone();
+    
         show_setting.connect_activate(move |_, _| {
-            // let settings_dialog:SettingsModal = glib::Object::new().expect("Failed to create Settings Dialog");
-            window.imp().settings.set_transient_for(Some(&window));
-            window.imp().settings.set_modal(true);
-            window.imp().settings.grab_focus();
-            window.imp().settings.present();
+            let settings = window.imp().settings.clone();
+    
+            if !settings.is_visible() {
+                settings.set_transient_for(Some(&window));
+                settings.set_modal(true);
+                settings.show();
+                // Utilizza glib::Cast per eseguire un cast sicuro
+                if let Ok(dialog) = settings.dynamic_cast::<gtk::Window>() {
+                    dialog.connect_close_request(|dialog| {
+                        dialog.hide();
+                        Propagation::Proceed
+                    });
+                }
+            }
         });
+    
         self.add_action(&show_setting);
-    
-    
     }
+    
 
     /* Function to update the current pixbuf value */
     pub fn set_pixbuf(&self, new_pixbuf: Pixbuf) {
@@ -466,6 +476,7 @@ impl MainWindow {
             }
         });
     }
+
 }
 
 fn calculate_image_dimension(width: i32, height: i32, aspect_ratio: f64) -> ImageOffset {
