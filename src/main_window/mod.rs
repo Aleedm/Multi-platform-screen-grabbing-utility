@@ -47,25 +47,25 @@ impl MainWindow {
     pub fn settings_setup(&self) {
         let show_setting = gio::SimpleAction::new("show_setting", None);
         let window = self.clone();
+        let app = window.imp().appl.clone().into_inner();
+        let settings:SettingsModal = SettingsModal::new(&app);
+        settings.set_application(Some(&app.clone()));
     
         show_setting.connect_activate(move |_, _| {
             //let settings = window.imp().settings.clone().into();
-            let app = window.imp().appl.clone().into_inner();
-            let settings:SettingsModal = SettingsModal::new(&app);
-    
-            if !settings.is_visible() {
-                settings.set_transient_for(Some(&window));
-                settings.set_modal(true);
-                settings.focus();
-                settings.show();
-                // Utilizza glib::Cast per eseguire un cast sicuro
-                if let Ok(dialog) = settings.dynamic_cast::<gtk::ApplicationWindow>() {
-                    dialog.connect_close_request(|dialog| {
-                        dialog.hide();
-                        Propagation::Proceed
-                    });
-                }
+            
+            settings.set_transient_for(Some(&window));
+            settings.set_modal(true);
+            settings.focus();
+            settings.present();
+            // Utilizza glib::Cast per eseguire un cast sicuro
+            if let Ok(dialog) = settings.clone().dynamic_cast::<gtk::ApplicationWindow>() {
+                dialog.connect_close_request( |dialog| {
+                    dialog.hide();
+                    Propagation::Stop
+                });
             }
+
         });
     
         self.add_action(&show_setting);
