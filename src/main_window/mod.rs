@@ -49,15 +49,20 @@ impl MainWindow {
         let window = self.clone();
         let app = window.imp().appl.clone().into_inner();
         let settings:SettingsModal = SettingsModal::new(&app);
-        settings.set_application(Some(&app.clone()));
+        settings.set_application(Some(&app));
+        settings.set_current_shortcut(self.imp().settings_manager.clone().unwrap().get_screen_shortcut());
+        settings.set_current_directory(self.imp().settings_manager.clone().unwrap().get_save_dir());
     
         show_setting.connect_activate(move |_, _| {
             //let settings = window.imp().settings.clone().into();
             
-            settings.set_transient_for(Some(&window));
-            settings.set_modal(true);
-            settings.focus();
-            settings.present();
+            if !settings.is_visible() {
+                settings.set_transient_for(Some(&window));
+                settings.set_modal(true);
+                settings.present();
+            } else if !settings.is_active() {
+                settings.present();
+            }
             // Utilizza glib::Cast per eseguire un cast sicuro
             if let Ok(dialog) = settings.clone().dynamic_cast::<gtk::ApplicationWindow>() {
                 dialog.connect_close_request( |dialog| {

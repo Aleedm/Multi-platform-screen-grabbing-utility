@@ -1,25 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="SettingsModal" parent="GtkApplicationWindow">
-    <!-- Definisci qui i tuoi widget, ad esempio un bottone -->
+    <property name="title">Settings</property>
     <child>
       <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkEntry" id="text">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Shortcut</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="shortcut_entry">
+                <property name="text" translatable="yes">shortcut</property>
+                <property name="editable">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="edit_shortcut_button">
+                <property name="label">edit</property>
+                <property name="action-name">win.edit_shortcut</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="edit_ss">
+                <child>
+                  <object class="GtkButton">
+                  <property name="label" translatable="yes">Save</property>
+                  <property name="tooltip-text" translatable="yes">Save new shortcut</property>
+                  <property name="action-name">win.save_shortcut</property>
+                  </object>
+                </child> 
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Discard</property>
+                    <property name="tooltip-text" translatable="yes">Discard changes</property>
+                    <property name="action-name">win.discard_shortcut</property>
+                  </object> 
+                </child>  
+              </object>
+            </child>
           </object>
         </child>
-
-        <child type="action">
-          <object class="GtkButton" id="button_cancel">
-          <property name="label">Cancel</property>
-          <property name="action-name">win.cancel</property>
-          </object>
-        </child>
-        <child type="action">
-          <object class="GtkButton" id="button_ok">
-          <property name="label">Save</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Default save directory</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="directory_entry">
+                <property name="text" translatable="yes">path</property>
+                <property name="editable">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="edit_directory">
+                <property name="label">edit</property>
+                <property name="action-name">win.edit_directory</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="edit_dir">
+                <child>
+                  <object class="GtkButton">
+                  <property name="label" translatable="yes">Save</property>
+                  <property name="tooltip-text" translatable="yes">Save new default directory</property>
+                  <property name="action-name">win.save_directory</property>
+                  </object>
+                </child> 
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Discard</property>
+                    <property name="tooltip-text" translatable="yes">Discard changes</property>
+                    <property name="action-name">win.discard_directory</property>
+                  </object>
+                </child>  
+              </object>
+            </child>
           </object>
         </child>
       </object>
