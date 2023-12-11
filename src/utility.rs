@@ -4,6 +4,10 @@ pub struct CropArea {
     start_y: i64,
     end_x: i64,
     end_y: i64,
+    new_start_x: i64,
+    new_start_y: i64,
+    new_end_x: i64,
+    new_end_y: i64,
 }
 
 impl CropArea {
@@ -13,6 +17,10 @@ impl CropArea {
             start_y: 0,
             end_x: 0,
             end_y: 0,
+            new_start_x: 0,
+            new_start_y: 0,
+            new_end_x: 0,
+            new_end_y: 0,
         }
     }
 
@@ -22,6 +30,10 @@ impl CropArea {
             start_y,
             end_x,
             end_y,
+            new_start_x: start_x,
+            new_start_y: start_y,
+            new_end_x: end_x,
+            new_end_y: end_y,
         }
     }
 
@@ -36,6 +48,18 @@ impl CropArea {
     }
     pub fn set_end_y(&mut self, y: i64) {
         self.end_y = y;
+    }
+    pub fn set_new_start_x(&mut self, x: i64) {
+        self.new_start_x = x;
+    }
+    pub fn set_new_start_y(&mut self, y: i64) {
+        self.new_start_y = y;
+    }
+    pub fn set_new_end_x(&mut self, x: i64) {
+        self.new_end_x = x;
+    }
+    pub fn set_new_end_y(&mut self, y: i64) {
+        self.new_end_y = y;
     }
 
     pub fn set_start(&mut self, x: i64, y: i64) {
@@ -59,6 +83,18 @@ impl CropArea {
     }
     pub fn get_end_y(&self) -> i64 {
         self.end_y
+    }
+    pub fn get_new_start_x(&self) -> i64 {
+        self.new_start_x
+    }
+    pub fn get_new_start_y(&self) -> i64 {
+        self.new_start_y
+    }
+    pub fn get_new_end_x(&self) -> i64 {
+        self.new_end_x
+    }
+    pub fn get_new_end_y(&self) -> i64 {
+        self.new_end_y
     }
 
     pub fn get_start(&self) -> (i64, i64) {
