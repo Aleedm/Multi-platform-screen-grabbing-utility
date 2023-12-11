@@ -41,6 +41,8 @@ pub struct MainWindow {
 
     pub crop_mode_active: Rc<RefCell<bool>>,
 
+    pub side_selected: Rc<RefCell<i8>>,
+
     pub settings_manager: Option<Settings>
 
 }
@@ -59,6 +61,7 @@ impl Default for MainWindow {
             image_offset: RefCell::new(ImageOffset::new()),
             crop_area: RefCell::new(CropArea::new()),
             crop_mode_active: Rc::new(RefCell::new(false)),
+            side_selected: Rc::new(RefCell::new(-1)),
             settings_manager: Settings::read_settings("config.json".to_string())
         }
     }
