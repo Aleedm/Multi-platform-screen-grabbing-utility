@@ -39,13 +39,13 @@ impl SettingsModal {
     pub fn hide_buttons(&self){
         self.imp().edit_dir.hide();
         self.imp().edit_ss.hide();
+        self.imp().directory_entry.set_can_focus(false);
+        self.imp().shortcut_entry.set_can_focus(false);
     }
 
     pub fn setup_entry(&self) {
         let entry = self.imp().shortcut_entry.clone();
         let window = self.clone();
-        entry.set_visible(true);
-        entry.set_can_focus(true);
         let key_controller = EventControllerKey::new();
         key_controller.connect_key_pressed(move |_, keyval , _, mods| {
             let flag = mods.is_empty();
@@ -102,7 +102,9 @@ impl SettingsModal {
         let window = self.clone();
         edit_directory.connect_activate(move |_, _| {
             window.imp().edit_directory.hide();
-            window.imp().edit_dir.show();   
+            window.imp().edit_dir.show();  
+            window.imp().directory_entry.set_can_focus(true);
+            window.imp().directory_entry.set_editable(true);
         });
 
         self.add_action(&edit_directory);
@@ -114,7 +116,8 @@ impl SettingsModal {
         save_directory.connect_activate(move |_, _| {
             //TODO: save changes
             window.imp().edit_directory.show();
-            window.imp().edit_dir.hide();    
+            window.imp().edit_dir.hide();  
+            window.imp().directory_entry.set_can_focus(false);
         });
 
         self.add_action(&save_directory);
@@ -124,9 +127,11 @@ impl SettingsModal {
         let discard_directory = gio::SimpleAction::new("discard_directory", None);
         let window = self.clone();
         discard_directory.connect_activate(move |_, _| {
-            //TODO: discard changes
+            //discard changes
             window.imp().edit_directory.show();
             window.imp().edit_dir.hide();    
+            window.imp().directory_entry.set_text(window.imp().current_directory.borrow().as_str());
+            window.imp().directory_entry.set_can_focus(false);
         });
 
         self.add_action(&discard_directory);
