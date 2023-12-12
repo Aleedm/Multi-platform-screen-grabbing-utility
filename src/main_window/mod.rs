@@ -52,8 +52,13 @@ impl MainWindow {
             settings.focus();
             settings.present();
             // Utilizza glib::Cast per eseguire un cast sicuro
+            let settings_clone = settings.clone();
+            let window_clone = window.clone();
             if let Ok(dialog) = settings.clone().dynamic_cast::<gtk::ApplicationWindow>() {
-                dialog.connect_close_request(|dialog| {
+                dialog.connect_close_request(move |dialog| {
+                    let settings_manager_from_setting_modal = settings_clone.get_settings_manager();
+                    let shortcuts = settings_manager_from_setting_modal.clone().unwrap().get_screen_shortcut();
+                    window_clone.update_shortcut(&[&shortcuts]);
                     dialog.hide();
                     Propagation::Stop
                 });
