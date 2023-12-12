@@ -12,7 +12,6 @@ use gtk::{
 };
 use gtk4 as gtk;
 
-
 glib::wrapper! {
     pub struct SettingsModal(ObjectSubclass<imp::SettingsModal>)
         @extends gtk::Widget, gtk::Window,
@@ -26,17 +25,21 @@ impl SettingsModal {
 
     /* Function to set the save directory */
     pub fn set_current_directory(&self, directory: String) {
-        *self.imp().current_directory.borrow_mut() = directory;   
-        self.imp().directory_entry.set_text(self.imp().current_directory.borrow().as_str());   
+        *self.imp().current_directory.borrow_mut() = directory;
+        self.imp()
+            .directory_entry
+            .set_text(self.imp().current_directory.borrow().as_str());
     }
 
     /* Function to set the shortcut */
     pub fn set_current_shortcut(&self, shortcut: String) {
         *self.imp().current_shortcut.borrow_mut() = shortcut;
-        self.imp().shortcut_entry.set_text(self.imp().current_shortcut.borrow().as_str());   
+        self.imp()
+            .shortcut_entry
+            .set_text(self.imp().current_shortcut.borrow().as_str());
     }
 
-    pub fn hide_buttons(&self){
+    pub fn hide_buttons(&self) {
         self.imp().edit_dir.hide();
         self.imp().edit_ss.hide();
         self.imp().directory_entry.set_can_focus(false);
@@ -47,17 +50,17 @@ impl SettingsModal {
         let entry = self.imp().shortcut_entry.clone();
         let window = self.clone();
         let key_controller = EventControllerKey::new();
-        key_controller.connect_key_pressed(move |_, keyval , _, mods| {
+        let edit_ss = self.imp().edit_ss.clone();
+        key_controller.connect_key_pressed(move |_, keyval, _, mods| {
             let flag = mods.is_empty();
-            
-            let shortcut = accelerator_name(keyval,mods);
+
+            let shortcut = accelerator_name(keyval, mods);
             println!("Shortcut: {}", shortcut);
-            if !flag {
+            if !flag && edit_ss.is_visible() {
                 window.imp().shortcut_entry.set_text(shortcut.as_str());
             }
 
-
-            Propagation::Proceed   
+            Propagation::Proceed
         });
         entry.add_controller(key_controller);
     }
@@ -65,10 +68,14 @@ impl SettingsModal {
     pub fn setup_discard_shortcut_button(&self) {
         let discard_shortcut = gio::SimpleAction::new("discard_shortcut", None);
         let window = self.clone();
+        let entry = self.imp().shortcut_entry.clone();
+        let shortcut = self.imp().current_shortcut.clone();
         discard_shortcut.connect_activate(move |_, _| {
             //TODO: discard changes
             window.imp().edit_shortcut_button.show();
-            window.imp().edit_ss.hide();   
+            window.imp().edit_ss.hide();
+            entry.set_text(shortcut.borrow().as_str());
+            entry.set_can_focus(false);
         });
 
         self.add_action(&discard_shortcut);
@@ -77,10 +84,12 @@ impl SettingsModal {
     pub fn setup_save_shortcut_button(&self) {
         let save_shortcut = gio::SimpleAction::new("save_shortcut", None);
         let window = self.clone();
+        let entry = self.imp().shortcut_entry.clone();
         save_shortcut.connect_activate(move |_, _| {
             //TODO: save changes
             window.imp().edit_shortcut_button.show();
-            window.imp().edit_ss.hide();   
+            window.imp().edit_ss.hide();
+            entry.set_can_focus(false);
         });
 
         self.add_action(&save_shortcut);
@@ -88,10 +97,13 @@ impl SettingsModal {
 
     pub fn setup_edit_shortcut_button(&self) {
         let edit_shortcut = gio::SimpleAction::new("edit_shortcut", None);
+        let entry = self.imp().shortcut_entry.clone();
         let window = self.clone();
         edit_shortcut.connect_activate(move |_, _| {
             window.imp().edit_shortcut_button.hide();
-            window.imp().edit_ss.show();   
+            window.imp().edit_ss.show();
+            entry.set_can_focus(true);
+            entry.grab_focus();
         });
 
         self.add_action(&edit_shortcut);
@@ -122,7 +134,7 @@ impl SettingsModal {
 
         self.add_action(&save_directory);
     }
-    
+
     pub fn setup_discard_directory_button(&self) {
         let discard_directory = gio::SimpleAction::new("discard_directory", None);
         let window = self.clone();
@@ -136,6 +148,4 @@ impl SettingsModal {
 
         self.add_action(&discard_directory);
     }
-    
-
 }
