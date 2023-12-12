@@ -62,12 +62,12 @@ impl SettingsModal {
         let discard_shortcut = gio::SimpleAction::new("discard_shortcut", None);
         let window = self.clone();
         let entry = self.imp().shortcut_entry.clone();
-        let shortcut = self.imp().current_shortcut.clone();
         discard_shortcut.connect_activate(move |_, _| {
             //TODO: discard changes
             window.imp().edit_shortcut_button.show();
             window.imp().edit_ss.hide();
-            entry.set_text(shortcut.borrow().as_str());
+            let shortcut = window.imp().settings_manager.borrow().clone().expect("Settings not available").get_screen_shortcut();
+            entry.set_text(shortcut.as_str());
             entry.set_can_focus(false);
         });
 
