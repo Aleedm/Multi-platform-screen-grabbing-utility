@@ -44,10 +44,11 @@ impl MainWindow {
         let app = window.imp().appl.clone().into_inner();
         let settings: SettingsModal = SettingsModal::new(&app);
         settings.set_application(Some(&app.clone()));
-        settings.set_current_shortcut(self.imp().settings_manager.clone().expect("Settings not available").get_screen_shortcut());
+        let settings_manager = self.imp().settings_manager.clone().expect("Settings not available");
+        settings.set_current_shortcut(settings_manager.get_screen_shortcut());
+        settings.set_current_directory(settings_manager.get_save_dir());
+        
         show_setting.connect_activate(move |_, _| {
-            //let settings = window.imp().settings.clone().into();
-
             settings.set_transient_for(Some(&window));
             settings.set_modal(true);
             settings.focus();

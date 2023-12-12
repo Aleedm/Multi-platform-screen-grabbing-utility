@@ -26,18 +26,19 @@ impl SettingsModal {
 
     /* Function to set the save directory */
     pub fn set_current_directory(&self, directory: String) {
-        *self.imp().current_directory.borrow_mut() = directory;      
+        *self.imp().current_directory.borrow_mut() = directory;   
+        self.imp().directory_entry.set_text(self.imp().current_directory.borrow().as_str());   
     }
 
     /* Function to set the shortcut */
     pub fn set_current_shortcut(&self, shortcut: String) {
-        *self.imp().current_shortcut.borrow_mut() = shortcut;      
+        *self.imp().current_shortcut.borrow_mut() = shortcut;
+        self.imp().shortcut_entry.set_text(self.imp().current_shortcut.borrow().as_str());   
     }
 
     pub fn hide_buttons(&self){
         self.imp().edit_dir.hide();
         self.imp().edit_ss.hide();
-        self.imp().shortcut_entry.set_text(self.imp().current_shortcut.borrow().as_str());
     }
 
     pub fn setup_entry(&self) {
