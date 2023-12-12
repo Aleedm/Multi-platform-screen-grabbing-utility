@@ -4,11 +4,12 @@ use gtk::glib::Propagation;
 use gtk::{
     gio,
     glib,
-    //glib::{self, subclass::types::ObjectSubclassIsExt, Propagation},
     prelude::WidgetExt,
     prelude::*,
     subclass::prelude::ObjectSubclassIsExt,
     EventControllerKey,
+    FileChooserAction, FileChooserDialog,
+    ResponseType
 };
 use gtk4 as gtk;
 use crate::settings_manager::Settings;
@@ -70,7 +71,6 @@ impl SettingsModal {
             entry.set_text(shortcut.as_str());
             entry.set_can_focus(false);
         });
-
         self.add_action(&discard_shortcut);
     }
 
@@ -109,7 +109,25 @@ impl SettingsModal {
             window.imp().edit_directory.hide();
             window.imp().edit_dir.show();  
             window.imp().directory_entry.set_can_focus(true);
-            window.imp().directory_entry.set_editable(true);
+            let dialog = FileChooserDialog::new(
+                Some("Default save folder"),
+                Some(&window),
+                FileChooserAction::SelectFolder,
+                &[
+                    ("Cancel", ResponseType::Cancel),
+                    ("Save", ResponseType::Accept),
+                ],
+            );
+            dialog.show();
+            let window_clone = window.clone();
+            dialog.connect_response(move |dialog, response| {
+                if response == ResponseType::Accept {
+                    if let Some(folder_path) = dialog.current_folder() {
+                       window_clone.imp().directory_entry.set_text(folder_path.path().expect("Incorrect Folder name").to_str().expect("Incorrect path"));
+                    }
+                }
+                dialog.close();
+            }); 
         });
 
         self.add_action(&edit_directory);
