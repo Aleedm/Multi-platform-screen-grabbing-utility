@@ -1,4 +1,5 @@
 mod imp;
+use crate::settings_manager::Settings;
 use gtk::accelerator_name;
 use gtk::glib::Propagation;
 use gtk::{
@@ -11,7 +12,6 @@ use gtk::{
     EventControllerKey,
 };
 use gtk4 as gtk;
-use crate::settings_manager::Settings;
 
 glib::wrapper! {
     pub struct SettingsModal(ObjectSubclass<imp::SettingsModal>)
@@ -24,15 +24,28 @@ impl SettingsModal {
         glib::Object::builder().property("application", app).build()
     }
 
-    /* Function to set the settings manager */
-    pub fn set_settings_manager(&self, settings_manager:Settings) {
-        *self.imp().settings_manager.borrow_mut() = Some(settings_manager);
-        let settings = self.imp().settings_manager.borrow().clone().expect("Settings not available");
-        self.imp().shortcut_entry.set_text(settings.get_screen_shortcut().as_str());
-        self.imp().directory_entry.set_text(settings.get_save_dir().as_str());
+    pub fn get_settings_manager(&self) -> Option<Settings> {
+        self.imp().settings_manager.borrow().clone()
     }
-    
-    pub fn hide_buttons(&self){
+
+    /* Function to set the settings manager */
+    pub fn set_settings_manager(&self, settings_manager: Settings) {
+        *self.imp().settings_manager.borrow_mut() = Some(settings_manager);
+        let settings = self
+            .imp()
+            .settings_manager
+            .borrow()
+            .clone()
+            .expect("Settings not available");
+        self.imp()
+            .shortcut_entry
+            .set_text(settings.get_screen_shortcut().as_str());
+        self.imp()
+            .directory_entry
+            .set_text(settings.get_save_dir().as_str());
+    }
+
+    pub fn hide_buttons(&self) {
         self.imp().edit_dir.hide();
         self.imp().edit_ss.hide();
         self.imp().directory_entry.set_can_focus(false);
@@ -63,10 +76,15 @@ impl SettingsModal {
         let window = self.clone();
         let entry = self.imp().shortcut_entry.clone();
         discard_shortcut.connect_activate(move |_, _| {
-            //TODO: discard changes
             window.imp().edit_shortcut_button.show();
             window.imp().edit_ss.hide();
-            let shortcut = window.imp().settings_manager.borrow().clone().expect("Settings not available").get_screen_shortcut();
+            let shortcut = window
+                .imp()
+                .settings_manager
+                .borrow()
+                .clone()
+                .expect("Settings not available")
+                .get_screen_shortcut();
             entry.set_text(shortcut.as_str());
             entry.set_can_focus(false);
         });
@@ -79,10 +97,19 @@ impl SettingsModal {
         let window = self.clone();
         let entry = self.imp().shortcut_entry.clone();
         save_shortcut.connect_activate(move |_, _| {
-            //TODO: save changes
+            let new_shortcut = entry.text().as_str().to_string();
             window.imp().edit_shortcut_button.show();
             window.imp().edit_ss.hide();
             entry.set_can_focus(false);
+            let mut settings_manager = window.imp().settings_manager.borrow_mut();
+            if let Some(ref mut settings) = *settings_manager {
+                settings.set_screen_shortcut(new_shortcut.clone());
+            }
+
+            // Salva l'oggetto Settings aggiornato nel file di configurazione
+            if let Some(settings) = settings_manager.clone() {
+                settings.write_settings("config.json".to_string());
+            }
         });
 
         self.add_action(&save_shortcut);
@@ -107,7 +134,7 @@ impl SettingsModal {
         let window = self.clone();
         edit_directory.connect_activate(move |_, _| {
             window.imp().edit_directory.hide();
-            window.imp().edit_dir.show();  
+            window.imp().edit_dir.show();
             window.imp().directory_entry.set_can_focus(true);
             window.imp().directory_entry.set_editable(true);
         });
@@ -121,7 +148,7 @@ impl SettingsModal {
         save_directory.connect_activate(move |_, _| {
             //TODO: save changes
             window.imp().edit_directory.show();
-            window.imp().edit_dir.hide();  
+            window.imp().edit_dir.hide();
             window.imp().directory_entry.set_can_focus(false);
         });
 
@@ -134,8 +161,14 @@ impl SettingsModal {
         discard_directory.connect_activate(move |_, _| {
             //discard changes
             window.imp().edit_directory.show();
-            window.imp().edit_dir.hide();    
-            let old_dir = window.imp().settings_manager.borrow().clone().expect("Settings not available").get_save_dir();
+            window.imp().edit_dir.hide();
+            let old_dir = window
+                .imp()
+                .settings_manager
+                .borrow()
+                .clone()
+                .expect("Settings not available")
+                .get_save_dir();
             window.imp().directory_entry.set_text(old_dir.as_str());
             window.imp().directory_entry.set_can_focus(false);
         });

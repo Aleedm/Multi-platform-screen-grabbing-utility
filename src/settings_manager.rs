@@ -57,14 +57,18 @@ impl Settings{
     }
 
     pub fn get_screen_shortcut(&self) -> String {
+        println!("Saved shortcut: {}", self.screen_shortcut);
         self.screen_shortcut.clone()
     }
     pub fn get_save_dir(&self) -> String {
         self.save_dir.clone()
     }
+    
     pub fn set_screen_shortcut(&mut self, shortcut: String) {
+        println!("New shortcut: {}, old shortcut: {}", shortcut, self.screen_shortcut);
         self.screen_shortcut = shortcut;
     }
+    
     pub fn set_save_dir(&mut self, directory: String) {
         self.save_dir = directory;
     }
