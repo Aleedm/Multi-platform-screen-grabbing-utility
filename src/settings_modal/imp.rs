@@ -1,6 +1,7 @@
 use gtk::{glib, subclass::prelude::*};
 use gtk4 as gtk;
 use std::cell::RefCell;
+use crate::settings_manager::Settings;
 #[derive(Debug, Default, gtk::CompositeTemplate)]
 #[template(resource = "/org/mpsgu/settings.ui")]
 pub struct SettingsModal {
@@ -17,24 +18,8 @@ pub struct SettingsModal {
     #[template_child]
     pub edit_dir: TemplateChild<gtk::Box>,
 
-    pub current_shortcut: RefCell<String>, 
-    pub current_directory: RefCell<String>  
-
+    pub settings_manager: RefCell<Option<Settings>>
 }
-
-/* impl Default for MainWindow {
-    fn default() -> Self {
-        Self {
-            shortcut_entry: Default::default(),
-            edit_shortcut_button: Default::default(),
-            edit_ss: Default::default(),
-            directory_entry: Default::default(),
-            edit_directory: Default::default(),
-            edit_dir: Default::default(),
-            settings_manager: Rc::new(RefCell::new(false))
-        }
-    }
-} */
 
 #[glib::object_subclass]
 impl ObjectSubclass for SettingsModal {

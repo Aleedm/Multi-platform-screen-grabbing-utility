@@ -11,7 +11,7 @@ use gtk::{
     EventControllerKey,
 };
 use gtk4 as gtk;
-
+use crate::settings_manager::Settings;
 
 glib::wrapper! {
     pub struct SettingsModal(ObjectSubclass<imp::SettingsModal>)
@@ -24,18 +24,14 @@ impl SettingsModal {
         glib::Object::builder().property("application", app).build()
     }
 
-    /* Function to set the save directory */
-    pub fn set_current_directory(&self, directory: String) {
-        *self.imp().current_directory.borrow_mut() = directory;   
-        self.imp().directory_entry.set_text(self.imp().current_directory.borrow().as_str());   
+    /* Function to set the settings manager */
+    pub fn set_settings_manager(&self, settings_manager:Settings) {
+        *self.imp().settings_manager.borrow_mut() = Some(settings_manager);
+        let settings = self.imp().settings_manager.borrow().clone().expect("Settings not available");
+        self.imp().shortcut_entry.set_text(settings.get_screen_shortcut().as_str());
+        self.imp().directory_entry.set_text(settings.get_save_dir().as_str());
     }
-
-    /* Function to set the shortcut */
-    pub fn set_current_shortcut(&self, shortcut: String) {
-        *self.imp().current_shortcut.borrow_mut() = shortcut;
-        self.imp().shortcut_entry.set_text(self.imp().current_shortcut.borrow().as_str());   
-    }
-
+    
     pub fn hide_buttons(&self){
         self.imp().edit_dir.hide();
         self.imp().edit_ss.hide();
@@ -130,7 +126,8 @@ impl SettingsModal {
             //discard changes
             window.imp().edit_directory.show();
             window.imp().edit_dir.hide();    
-            window.imp().directory_entry.set_text(window.imp().current_directory.borrow().as_str());
+            let old_dir = window.imp().settings_manager.borrow().clone().expect("Settings not available").get_save_dir();
+            window.imp().directory_entry.set_text(old_dir.as_str());
             window.imp().directory_entry.set_can_focus(false);
         });
 

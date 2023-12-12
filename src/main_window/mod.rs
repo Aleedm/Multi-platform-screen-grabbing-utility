@@ -45,9 +45,7 @@ impl MainWindow {
         let settings: SettingsModal = SettingsModal::new(&app);
         settings.set_application(Some(&app.clone()));
         let settings_manager = self.imp().settings_manager.clone().expect("Settings not available");
-        settings.set_current_shortcut(settings_manager.get_screen_shortcut());
-        settings.set_current_directory(settings_manager.get_save_dir());
-        
+        settings.set_settings_manager(settings_manager);
         show_setting.connect_activate(move |_, _| {
             settings.set_transient_for(Some(&window));
             settings.set_modal(true);
