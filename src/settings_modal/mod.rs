@@ -1,4 +1,5 @@
 mod imp;
+use gtk::accelerator_name;
 use gtk::glib::Propagation;
 use gtk::{
     gio,
@@ -10,9 +11,7 @@ use gtk::{
     EventControllerKey,
 };
 use gtk4 as gtk;
-use std::cell::RefCell;
-use crate::settings_manager;
-use crate::settings_manager::Settings;
+
 
 glib::wrapper! {
     pub struct SettingsModal(ObjectSubclass<imp::SettingsModal>)
@@ -43,13 +42,21 @@ impl SettingsModal {
 
     pub fn setup_entry(&self) {
         let entry = self.imp().shortcut_entry.clone();
+        let window = self.clone();
         entry.set_visible(true);
         entry.set_can_focus(true);
         let key_controller = EventControllerKey::new();
-        key_controller.connect_key_pressed(|_, keyval, _, _| {
-            let keyname = keyval.name().unwrap();
-            println!("Key Pressed: {}", keyname);
-            Propagation::Proceed
+        key_controller.connect_key_pressed(move |_, keyval , _, mods| {
+            let flag = mods.is_empty();
+            
+            let shortcut = accelerator_name(keyval,mods);
+            println!("Shortcut: {}", shortcut);
+            if !flag {
+                window.imp().shortcut_entry.set_text(shortcut.as_str());
+            }
+
+
+            Propagation::Proceed   
         });
         entry.add_controller(key_controller);
     }

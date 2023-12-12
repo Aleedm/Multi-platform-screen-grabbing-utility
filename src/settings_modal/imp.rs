@@ -1,6 +1,5 @@
 use gtk::{glib, subclass::prelude::*};
 use gtk4 as gtk;
-use crate::settings_manager::Settings;
 use std::cell::RefCell;
 #[derive(Debug, Default, gtk::CompositeTemplate)]
 #[template(resource = "/org/mpsgu/settings.ui")]
