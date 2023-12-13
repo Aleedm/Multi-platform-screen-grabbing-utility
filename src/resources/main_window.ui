@@ -18,7 +18,11 @@
         <property name="orientation">vertical</property>
 
         <child>
-          <object class="FirstMenuBar" id="menubar"/>
+          <object class="FirstMenuBar" id="menubar">
+             <style>
+              <class name="first-menu-bar"/>  
+            </style>
+          </object>
         </child>
         <child>
           <object class="CropMenuBar" id="cropbar"/>

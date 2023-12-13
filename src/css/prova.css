@@ -1,5 +1,48 @@
 /* style.css */
+/* Define the general style for your toolbar */
+.first-menu-bar {
+    padding: 15px;
+    background: #eae6e6; /* Adjust the color to match your application's theme */
+}
+
+/* Style for the buttons to add some margins and potentially adjust padding */
+.button {
+    margin: 0 6px; /* Add some space between buttons */
+    padding: 4px 8px; /* Adjust padding if needed */
+}
+
+/* Specific style for the screenshot button if you want to differentiate it */
 .screenshot-button {
+    /* Add specific styles for the screenshot button if needed */
     background: darkgreen;
     color: white;
+}
+
+/* Style for the menu buttons */
+.menu-button {
+    padding: 4px 8px;
+}
+
+/* Style for labels within buttons, if needed */
+.button .label {
+    margin-left: 6px; /* Space between icon and text */
+}
+
+/* You may need to adjust icon sizes to fit the button sizes */
+.button .image {
+    icon-size: 16px;
+}
+
+/* Style for the dropdown arrows if necessary */
+.pan-down-symbolic {
+    icon-size: 16px;
+}
+
+/* Adjust the GtkBox spacing if needed */
+.box {
+    spacing: 6px; /* This should match the spacing property of the GtkBox in your UI file */
+}
+
+.settings-menu-box {
+    justify-content: end;
 }
