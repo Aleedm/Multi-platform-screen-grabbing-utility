@@ -1,5 +1,4 @@
 use gdk_pixbuf::Pixbuf;
-use gtk::gdk::{Display, self};
 use gtk::gdk_pixbuf::{self, Colorspace};
 use gtk::glib;
 use gtk4 as gtk;
