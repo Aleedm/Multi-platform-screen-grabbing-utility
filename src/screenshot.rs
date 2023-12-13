@@ -7,9 +7,9 @@ use screenshots::{
     Screen,
 };
 
-pub fn screenshot() -> Pixbuf {
+pub fn screenshot(index:usize) -> Pixbuf {
     let screens = Screen::all().unwrap();
-    let screen = screens[0].clone();
+    let screen = screens[index].clone();
     println!("capturer: {:?}", screen);
     let buffer = screen.capture().unwrap();
     let pixbuf = image_buffer_to_gdk_pixbuf(&buffer).unwrap();

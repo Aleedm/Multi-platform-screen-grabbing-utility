@@ -47,6 +47,7 @@ pub struct MainWindow {
     pub settings_manager: RefCell<Option<Settings>>,
     
     pub monitors: RefCell<Vec<String>>,
+    pub current_monitor: RefCell<u32>
 }
 
 impl Default for MainWindow {
@@ -67,6 +68,7 @@ impl Default for MainWindow {
             side_selected: Rc::new(RefCell::new(-1)),
             settings_manager: RefCell::new(Settings::read_settings("config.json".to_string())),
             monitors: RefCell::new(Vec::new()),
+            current_monitor: RefCell::new(0)
         }
     }
 }

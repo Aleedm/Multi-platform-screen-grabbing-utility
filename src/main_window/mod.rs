@@ -41,6 +41,9 @@ impl MainWindow {
         let imp = self.imp();
         *imp.settings_manager.borrow_mut() = Some(new_sett);
     }
+    pub fn set_current_monitor(&self, monitor_number: u32) {
+        *self.imp().current_monitor.borrow_mut() = monitor_number;
+    }
     pub fn set_monitors(&self, new_monitors: Vec<String>) {
         let imp = self.imp();
         *imp.monitors.borrow_mut() = new_monitors;
@@ -49,22 +52,16 @@ impl MainWindow {
     /* multi-monitor support  */
     pub fn setup_monitors(&self){
         let monitors = get_monitor_names();
-        
-
         self.imp().menubar.populate_monitors_menu(monitors.clone());
 
-        let select_monitor = gio::SimpleAction::new("select_monitor", Some(&VariantType::new("t").unwrap()));
+        let window = self.clone();
+        let select_monitor = gio::SimpleAction::new("select_monitor", Some(&VariantType::new("u").unwrap()));
             select_monitor.connect_activate(move |action, parameter| {
                 let index = parameter
                     .unwrap()
                     .get::<u32>()
                     .expect("The value should be of type usize");
-    
-                //action.set_state(parameter.unwrap());
-                println!("{}", index);
-                //temp_self.imp().menubar.update_delay(delay_value);
-                // Set the state of the action to the new delay value
-                //action.set_state(&parameter.unwrap());
+                window.set_current_monitor(index);
             });
 
         self.add_action(&select_monitor);
@@ -307,7 +304,7 @@ impl MainWindow {
                 let sleep_duration = Duration::from_secs(delay);
                 thread::sleep(sleep_duration);
             }
-            let pixbuf = screenshot();
+            let pixbuf = screenshot(*window.imp().current_monitor.borrow() as usize);
             window.set_pixbuf(pixbuf.clone());
             image_clone.set_pixbuf(Some(&pixbuf));
             window.imp().menubar.imp().edit.show();
