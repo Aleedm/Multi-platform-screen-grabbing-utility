@@ -164,10 +164,18 @@ impl SettingsModal {
         let save_directory = gio::SimpleAction::new("save_directory", None);
         let window = self.clone();
         save_directory.connect_activate(move |_, _| {
-            //TODO: save changes
+            //Save changes
             window.imp().edit_directory.show();
             window.imp().edit_dir.hide();
             window.imp().directory_entry.set_can_focus(false);
+
+            let mut settings_manager = window.imp().settings_manager.borrow_mut();
+            if let Some(ref mut settings) = *settings_manager {
+                settings.set_save_dir(window.imp().directory_entry.text().as_str().to_string());
+            }
+            if let Some(settings) = settings_manager.clone() {
+                settings.write_settings("config.json".to_string());
+            }
         });
 
         self.add_action(&save_directory);
