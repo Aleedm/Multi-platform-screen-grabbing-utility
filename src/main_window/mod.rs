@@ -41,6 +41,15 @@ impl MainWindow {
         let imp = self.imp();
         *imp.settings_manager.borrow_mut() = Some(new_sett);
     }
+    pub fn set_monitors(&self, new_monitors: Vec<String>) {
+        let imp = self.imp();
+        *imp.monitors.borrow_mut() = new_monitors;
+    }
+
+    pub fn setup_monitors(&self){
+        let monitors = get_monitor_names();
+        self.set_monitors(monitors);
+    }
 
     /* "show_setting" action to show settings modal */
     pub fn settings_setup(&self) {
@@ -803,4 +812,20 @@ fn is_crop_area_invalid(crop_area: &CropArea) -> bool {
             && crop_area.get_start_y() == 0
             && crop_area.get_end_x() == 0
             && crop_area.get_end_y() == 0)
+}
+
+
+
+pub fn get_monitor_names() -> Vec<String> {
+    let display = gdk::Display::default().unwrap();
+    let monitors = display.monitors();
+    let mut monitor_names = Vec::new();
+    for i in 0..monitors.n_items() {
+        let monitor = monitors.item(i).expect("Could not get monitor");
+        let monitor: gdk::Monitor = monitor.downcast().expect("Could not downcast to Monitor");
+        let monitor_name = monitor.model().unwrap_or_else(|| "Unknown".into());
+        monitor_names.push(monitor_name.to_string());
+    }
+
+    monitor_names
 }

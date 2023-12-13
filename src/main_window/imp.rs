@@ -43,6 +43,8 @@ pub struct MainWindow {
     pub side_selected: Rc<RefCell<i8>>,
 
     pub settings_manager: RefCell<Option<Settings>>,
+    
+    pub monitors: RefCell<Vec<String>>,
 }
 
 impl Default for MainWindow {
@@ -61,6 +63,7 @@ impl Default for MainWindow {
             crop_mode_active: Rc::new(RefCell::new(false)),
             side_selected: Rc::new(RefCell::new(-1)),
             settings_manager: RefCell::new(Settings::read_settings("config.json".to_string())),
+            monitors: RefCell::new(Vec::new()),
         }
     }
 }
@@ -103,6 +106,7 @@ impl ObjectImpl for MainWindow {
         self.obj().exit_action_setup();
         self.obj().confirm_action_setup();
         self.obj().settings_setup();
+        self.obj().setup_monitors();
     }
 }
 
