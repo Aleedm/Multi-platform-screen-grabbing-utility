@@ -23,7 +23,7 @@ fn main() -> glib::ExitCode {
         let app1 = app.clone();
         let win: MainWindow = MainWindow::new(app);
         win.set_application(app.clone());
-        let shortcut = win.imp().settings_manager.clone().unwrap().get_screen_shortcut();
+        let shortcut = win.imp().settings_manager.borrow().clone().unwrap().get_screen_shortcut();
         win.update_shortcut(&[&shortcut.as_str()]);
         win.present();
         win.connect_close_request(move |_| {

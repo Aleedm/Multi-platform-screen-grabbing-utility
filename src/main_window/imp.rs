@@ -1,7 +1,7 @@
 use crate::crop_menu_bar::CropMenuBar;
+use crate::settings_manager::Settings;
 use crate::utility::ImageOffset;
 use crate::{first_menu_bar::FirstMenuBar, utility::CropArea};
-use crate::settings_manager::Settings;
 use gtk::gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::{
     glib::{self},
@@ -28,9 +28,8 @@ pub struct MainWindow {
     pub overlay: TemplateChild<gtk::Overlay>,
     #[template_child]
     pub drawing_area: TemplateChild<gtk::DrawingArea>,
-    
-    //pub settings: RefCell<SettingsModal>,
 
+    //pub settings: RefCell<SettingsModal>,
     pub appl: RefCell<gtk::Application>,
 
     pub pixbuf: RefCell<Pixbuf>,
@@ -43,8 +42,7 @@ pub struct MainWindow {
 
     pub side_selected: Rc<RefCell<i8>>,
 
-    pub settings_manager: Option<Settings>
-
+    pub settings_manager: RefCell<Option<Settings>>,
 }
 
 impl Default for MainWindow {
@@ -62,7 +60,7 @@ impl Default for MainWindow {
             crop_area: RefCell::new(CropArea::new()),
             crop_mode_active: Rc::new(RefCell::new(false)),
             side_selected: Rc::new(RefCell::new(-1)),
-            settings_manager: Settings::read_settings("config.json".to_string())
+            settings_manager: RefCell::new(Settings::read_settings("config.json".to_string())),
         }
     }
 }

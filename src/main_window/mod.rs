@@ -1,5 +1,10 @@
 mod imp;
+use crate::screenshot::screenshot;
+use crate::settings_manager;
+use crate::settings_modal::SettingsModal;
+use crate::utility::{CropArea, ImageOffset};
 use arboard::{Clipboard, ImageData};
+use chrono::{DateTime, Local};
 use gtk::cairo;
 use gtk::glib::{clone, Propagation, VariantType};
 use gtk::{
@@ -15,10 +20,6 @@ use std::{
     thread,
     time::Duration,
 };
-use chrono::{Local, DateTime};
-use crate::screenshot::screenshot;
-use crate::settings_modal::SettingsModal;
-use crate::utility::{CropArea, ImageOffset};
 
 glib::wrapper! {
     pub struct MainWindow(ObjectSubclass<imp::MainWindow>)
@@ -36,6 +37,10 @@ impl MainWindow {
         let imp = self.imp();
         *imp.appl.borrow_mut() = new_app;
     }
+    pub fn set_settings_manager(&self, new_sett: settings_manager::Settings) {
+        let imp = self.imp();
+        *imp.settings_manager.borrow_mut() = Some(new_sett);
+    }
 
     /* "show_setting" action to show settings modal */
     pub fn settings_setup(&self) {
@@ -44,7 +49,12 @@ impl MainWindow {
         let app = window.imp().appl.clone().into_inner();
         let settings: SettingsModal = SettingsModal::new(&app);
         settings.set_application(Some(&app.clone()));
-        let settings_manager = self.imp().settings_manager.clone().expect("Settings not available");
+        let settings_manager = self
+            .imp()
+            .settings_manager
+            .borrow_mut()
+            .clone()
+            .expect("Settings not available");
         settings.set_settings_manager(settings_manager);
         show_setting.connect_activate(move |_, _| {
             settings.set_transient_for(Some(&window));
@@ -57,8 +67,24 @@ impl MainWindow {
             if let Ok(dialog) = settings.clone().dynamic_cast::<gtk::ApplicationWindow>() {
                 dialog.connect_close_request(move |dialog| {
                     let settings_manager_from_setting_modal = settings_clone.get_settings_manager();
-                    let shortcuts = settings_manager_from_setting_modal.clone().unwrap().get_screen_shortcut();
+                    window_clone.set_settings_manager(settings_manager_from_setting_modal.unwrap());
+                    let shortcuts = window_clone
+                        .imp()
+                        .settings_manager
+                        .borrow()
+                        .clone()
+                        .unwrap()
+                        .get_screen_shortcut();
+                    let dir = window_clone
+                        .imp()
+                        .settings_manager
+                        .borrow()
+                        .clone()
+                        .unwrap()
+                        .get_save_dir();
                     window_clone.update_shortcut(&[&shortcuts]);
+                    println!("shortcuts: {:?}", window_clone.imp().settings_manager.clone());
+                    println!("dir: {:?}", dir);
                     //window_clone.imp().settings_manager = settings_manager_from_setting_modal;
                     dialog.hide();
                     println!("{:?}", window_clone.imp().settings_manager.clone());
@@ -298,14 +324,13 @@ impl MainWindow {
 
             //Filenames based on the current date and time
             let now: DateTime<Local> = Local::now();
-            
+
             // Format the timestamp into a string like "ScreenGrab_2023-07-16T14-20-30.png"
             let timestamp_str = now.format("ScreenGrab_%Y-%m-%dT%H-%M-%S.png").to_string();
-            
-            
+
             dialog.set_current_name(&timestamp_str);
             // Imposta la directory iniziale del dialogo
-            if let Some(default_folder) = window.imp().settings_manager.clone() {
+            if let Some(default_folder) = window.imp().settings_manager.borrow().clone() {
                 let path_str = default_folder.get_save_dir();
                 let path = PathBuf::from(path_str.as_str());
                 let file = gio::File::for_path(&path);
