@@ -112,7 +112,10 @@ impl MainWindow {
                         .unwrap()
                         .get_save_dir();
                     window_clone.update_shortcut(&[&shortcuts]);
-                    println!("shortcuts: {:?}", window_clone.imp().settings_manager.clone());
+                    println!(
+                        "shortcuts: {:?}",
+                        window_clone.imp().settings_manager.clone()
+                    );
                     println!("dir: {:?}", dir);
                     //window_clone.imp().settings_manager = settings_manager_from_setting_modal;
                     dialog.hide();
@@ -146,6 +149,10 @@ impl MainWindow {
     pub fn set_side_selected(&self, new_side_selected: i8) {
         let imp = self.imp();
         *imp.side_selected.borrow_mut() = new_side_selected;
+    }
+    pub fn set_crop_mode(&self, new_crop_mode: i8) {
+        let imp = self.imp();
+        *imp.crop_mode.borrow_mut() = new_crop_mode;
     }
     /* "set_delay" action to set new delay value */
     pub fn delay_action_setup(&self) {
@@ -356,7 +363,7 @@ impl MainWindow {
 
             // Format the timestamp into a string like "ScreenGrab_2023-07-16T14-20-30.png"
             let timestamp_str = now.format("ScreenGrab_%Y-%m-%dT%H-%M-%S.png").to_string();
-        
+
             dialog.set_current_name(&timestamp_str);
             // Imposta la directory iniziale del dialogo
             if let Some(default_folder) = window.imp().settings_manager.borrow().clone() {
@@ -413,8 +420,7 @@ impl MainWindow {
         //let window = self.clone();
         let crop = gio::SimpleAction::new("crop", None);
 
-        //let picture = self.imp().image.clone();
-
+        let picture = self.imp().image.clone();
         let drawing_area = self.imp().drawing_area.clone();
         let drawing_area_clone = drawing_area.clone();
         let gesture_click = GestureClick::new();
@@ -484,89 +490,128 @@ impl MainWindow {
             window_2.set_crop_mode_active(true);
             window_2.imp().menubar.hide();
             window_2.imp().cropbar.show();
-            // Resetta l'area di selezione
-            let image_offset = window_2.imp().image_offset.clone();
-            let image = window_2.imp().image.clone();
-            let crop_area = calculate_crop_area(
-                image_offset.borrow().get_x(),
-                image_offset.borrow().get_y(),
-                image.width() as i64,
-                image.height() as i64,
-            );
+            let crop_area = CropArea::new();
             window_2.set_crop_area(crop_area);
             drawing_area.queue_draw();
             window_2.update_confirm_action_state();
+            window_2.set_crop_mode(0);
         });
         let window_3 = self.clone();
         cursor_controller_clone.connect_motion(move |_, x, y| {
-            let drawing_area_clone = window_3.imp().drawing_area.clone();
-            let crop_area = window_3.imp().crop_area.clone();
-            let x_start = crop_area.borrow().get_start_x();
-            let y_start = crop_area.borrow().get_start_y();
-            let x_end = crop_area.borrow().get_end_x();
-            let y_end = crop_area.borrow().get_end_y();
-            let side_selected = window_3.imp().side_selected.borrow().clone();
+            let crop_mode = window_3.imp().crop_mode.borrow().clone();
+            if crop_mode == 1 {
+                let drawing_area_clone = window_3.imp().drawing_area.clone();
+                let crop_area = window_3.imp().crop_area.clone();
+                let x_start = crop_area.borrow().get_start_x();
+                let y_start = crop_area.borrow().get_start_y();
+                let x_end = crop_area.borrow().get_end_x();
+                let y_end = crop_area.borrow().get_end_y();
+                let side_selected = window_3.imp().side_selected.borrow().clone();
 
-            // Controlla se il mouse è vicino a un bordo del rettangolo
-            let cursor_name;
-            if side_selected == -1 {
-                cursor_name = "grab";
-            } else {
-                cursor_name = "grabbing";
+                let cursor_name;
+                if side_selected == -1 {
+                    cursor_name = "grab";
+                } else {
+                    cursor_name = "grabbing";
+                }
+                set_cursor(
+                    x,
+                    x_start,
+                    x_end,
+                    y,
+                    y_start,
+                    y_end,
+                    drawing_area_clone,
+                    cursor_name,
+                );
+            } else if crop_mode == 0 {
+                let picture = window_3.imp().image.clone();
+                let image_offset = window_3.imp().image_offset.clone();
+                let crop_mode_active = window_3.imp().crop_mode_active.clone();
+                if *crop_mode_active.borrow()
+                    && x >= image_offset.borrow().get_x() as f64
+                    && y >= image_offset.borrow().get_y() as f64
+                    && x <= (picture.width() as i64 - image_offset.borrow().get_x()) as f64
+                    && y <= (picture.height() as i64 - image_offset.borrow().get_y()) as f64
+                {
+                    let drawing_area_clone = window_3.imp().drawing_area.clone();
+                    let cursor = gdk::Cursor::from_name("crosshair", None);
+                    drawing_area_clone.set_cursor(Some(&cursor.unwrap()));
+                } else {
+                    let drawing_area_clone = window_3.imp().drawing_area.clone();
+                    drawing_area_clone.set_cursor(None);
+                }
             }
-            set_cursor(
-                x,
-                x_start,
-                x_end,
-                y,
-                y_start,
-                y_end,
-                drawing_area_clone,
-                cursor_name,
-            );
         });
 
         let window_4 = self.clone();
         gesture_click_clone.connect_pressed(move |_, _, x, y| {
-            let drawing_area_clone = window_4.imp().drawing_area.clone();
-            let crop_area = window_4.imp().crop_area.clone();
-            let x_start = crop_area.borrow().get_start_x();
-            let y_start = crop_area.borrow().get_start_y();
-            let x_end = crop_area.borrow().get_end_x();
-            let y_end = crop_area.borrow().get_end_y();
+            let crop_mode = window_4.imp().crop_mode.borrow().clone();
+            if crop_mode == 0 {
+                let image_offset = window_4.imp().image_offset.clone();
+                let crop_mode_active = window_4.imp().crop_mode_active.clone();
+                if *crop_mode_active.borrow()
+                    && x >= image_offset.borrow().get_x() as f64
+                    && y >= image_offset.borrow().get_y() as f64
+                    && x <= (picture.width() as i64 - image_offset.borrow().get_x()) as f64
+                    && y <= (picture.height() as i64 - image_offset.borrow().get_y()) as f64
+                {
+                    print!("click");
 
-            // controlla se il mouse è vicino ad uno dei bordi e aggiorna la side selected
-            if (x as i64 - x_start).abs() < 10 {
-                window_4.set_side_selected(0); // 0 = left
-            } else if (x as i64 - x_end).abs() < 10 {
-                window_4.set_side_selected(1); // 1 = right
-            } else if (y as i64 - y_start).abs() < 10 {
-                window_4.set_side_selected(2); // 2 = top
-            } else if (y as i64 - y_end).abs() < 10 {
-                window_4.set_side_selected(3); // 3 = bottom
-            } else {
-                window_4.set_side_selected(-1);
-            }
-            let cursor_name = "grabbing";
-            set_cursor(
-                x,
-                x_start,
-                x_end,
-                y,
-                y_start,
-                y_end,
-                drawing_area_clone,
-                cursor_name,
-            );
-            if (x as i64 - x_start).abs() < 10
-                || (x as i64 - x_end).abs() < 10
-                || (y as i64 - y_start).abs() < 10
-                || (y as i64 - y_end).abs() < 10
-            {
-                crop_area.borrow_mut().set_new_start_x(x_start);
-                crop_area.borrow_mut().set_new_start_y(y_start);
-                crop_area.borrow_mut().set_new_end_x(x_end);
-                crop_area.borrow_mut().set_new_end_y(y_end);
+                    let crop_area = CropArea::new_with_params(x as i64, y as i64, 0, 0);
+                    window_4.set_crop_area(crop_area);
+                    println!("area: {:?}", window_4.imp().crop_area.borrow());
+                }
+            } else if crop_mode == 1 {
+                let drawing_area_clone = window_4.imp().drawing_area.clone();
+                let crop_area = window_4.imp().crop_area.clone();
+                let x_start = crop_area.borrow().get_start_x();
+                let y_start = crop_area.borrow().get_start_y();
+                let x_end = crop_area.borrow().get_end_x();
+                let y_end = crop_area.borrow().get_end_y();
+
+                // controlla se il mouse è vicino ad uno dei bordi e aggiorna la side selected
+                if (x as i64 - x_start).abs() < 10 && y as i64 > y_start && ((y as i64) < y_end) {
+                    window_4.set_side_selected(0); // 0 = left
+                } else if (x as i64 - x_end).abs() < 10
+                    && (y as i64 > y_start)
+                    && ((y as i64) < y_end)
+                {
+                    window_4.set_side_selected(1); // 1 = right
+                } else if (y as i64 - y_start).abs() < 10
+                    && (x as i64 > x_start)
+                    && ((x as i64) < x_end)
+                {
+                    window_4.set_side_selected(2); // 2 = top
+                } else if (y as i64 - y_end).abs() < 10
+                    && (x as i64 > x_start)
+                    && ((x as i64) < x_end)
+                {
+                    window_4.set_side_selected(3); // 3 = bottom
+                } else {
+                    window_4.set_side_selected(-1);
+                }
+                let cursor_name = "grabbing";
+                set_cursor(
+                    x,
+                    x_start,
+                    x_end,
+                    y,
+                    y_start,
+                    y_end,
+                    drawing_area_clone,
+                    cursor_name,
+                );
+                if (x as i64 - x_start).abs() < 10
+                    || (x as i64 - x_end).abs() < 10
+                    || (y as i64 - y_start).abs() < 10
+                    || (y as i64 - y_end).abs() < 10
+                {
+                    crop_area.borrow_mut().set_new_start_x(x_start);
+                    crop_area.borrow_mut().set_new_start_y(y_start);
+                    crop_area.borrow_mut().set_new_end_x(x_end);
+                    crop_area.borrow_mut().set_new_end_y(y_end);
+                }
             }
         });
 
@@ -592,22 +637,31 @@ impl MainWindow {
                     let side_selected = window_5.imp().side_selected.clone();
                     if *crop_mode_active.borrow() && area.get_start_x() >= image_offset.borrow().get_x() && area.get_start_y() >= image_offset.borrow().get_y()
                     && area.get_start_x() <= (image.width() as i64-image_offset.borrow().get_x()) && area.get_start_y() <= (image.height() as i64 -image_offset.borrow().get_y()){
-                        if *side_selected.borrow() == 0 { //left
-                            let start_x = min(max(area.get_start_x() + offset_x as i64, image_offset.borrow().get_x()), image.width() as i64 - image_offset.borrow().get_x());
-                            area.set_new_start_x(start_x);
+                        let crop_mode = window_5.imp().crop_mode.borrow().clone();
+                        if crop_mode == 0{
+                            let end_x = min(max(area.get_start_x() + offset_x as i64, image_offset.borrow().get_x()), image.width() as i64 - image_offset.borrow().get_x());
+                            area.set_end_x(end_x);
+                            let end_y = min(max(area.get_start_y() + offset_y as i64, image_offset.borrow().get_y()), image.height() as i64 - image_offset.borrow().get_y());
+                            area.set_end_y(end_y);
                             drawing_area_clone.queue_draw();
-                        }else if *side_selected.borrow() == 1{
+                        }else if crop_mode == 1 {
+                            if *side_selected.borrow() == 0 { //left
+                                let start_x = min(max(area.get_start_x() + offset_x as i64, image_offset.borrow().get_x()), image.width() as i64 - image_offset.borrow().get_x());
+                                area.set_new_start_x(start_x);
+                                drawing_area_clone.queue_draw();
+                            }else if *side_selected.borrow() == 1{
                             let end_x = max(min(area.get_end_x() + offset_x as i64, image.width() as i64 - image_offset.borrow().get_x()), image_offset.borrow().get_x());
                             area.set_new_end_x(end_x);
                             drawing_area_clone.queue_draw();
-                        }else if *side_selected.borrow() == 2{
+                            }else if *side_selected.borrow() == 2{
                             let start_y = min(max(area.get_start_y() + offset_y as i64, image_offset.borrow().get_y()), image.height() as i64 - image_offset.borrow().get_y());
                             area.set_new_start_y(start_y);
                             drawing_area_clone.queue_draw();
-                        }else if *side_selected.borrow() == 3{
-                            let end_y = max(min(area.get_end_y() + offset_y as i64, image.height() as i64 - image_offset.borrow().get_y()), image_offset.borrow().get_y());
-                            area.set_new_end_y(end_y);
-                            drawing_area_clone.queue_draw();
+                            }else if *side_selected.borrow() == 3{
+                                let end_y = max(min(area.get_end_y() + offset_y as i64, image.height() as i64 - image_offset.borrow().get_y()), image_offset.borrow().get_y());
+                                area.set_new_end_y(end_y);
+                                drawing_area_clone.queue_draw();
+                            }
                         }
                     }
                 }
@@ -619,130 +673,45 @@ impl MainWindow {
 
         let window_6 = self.clone();
         gesture_drag_clone.connect_drag_end(move |_, x, y| {
-            let drawing_area_clone = window_6.imp().drawing_area.clone();
-            let crop_area = window_6.imp().crop_area.clone();
-            // let old_x_start = crop_area.borrow().get_start_x();
-            // let old_y_start = crop_area.borrow().get_start_y();
-            // let old_x_end = crop_area.borrow().get_end_x();
-            // let old_y_end = crop_area.borrow().get_end_y();
-            let x_start = crop_area.borrow().get_new_start_x();
-            let y_start = crop_area.borrow().get_new_start_y();
-            let x_end = crop_area.borrow().get_new_end_x();
-            let y_end = crop_area.borrow().get_new_end_y();
-            let new_crop_area = CropArea::new_with_params(x_start, y_start, x_end, y_end);
-            window_6.set_crop_area(new_crop_area);
-
-            // Controlla se il mouse è vicino a un bordo del rettangolo
-            let cursor_name = "grab";
-            set_cursor(
-                x,
-                x_start,
-                x_end,
-                y,
-                y_start,
-                y_end,
-                drawing_area_clone,
-                cursor_name,
-            );
-            window_6.set_side_selected(-1);
-        });
-
-        /*let window_3 = self.clone();
-        gesture_click_clone.connect_pressed(
-            clone!(@strong drawing_area_clone, => move |_, _, x, y| {
-                println!("PIXBUF: {}, {}", window_3.imp().pixbuf.clone().into_inner().width(), window_3.imp().pixbuf.clone().into_inner().height() );
-                eprintln!("picture dimensions: {:?} {:?}", picture.width(), picture.height());
-                eprintln!("drawing_area dimensions: {:?} {:?}", drawing_area_clone.width(), drawing_area_clone.height());
-                let image_offset = window_3.imp().image_offset.clone();
-                eprintln!("image_offset: {:?}", image_offset);
-                eprintln!("x: {}, y: {}", x, y);
-                let crop_mode_active = window_3.imp().crop_mode_active.clone();
-                if *crop_mode_active.borrow() && x >= image_offset.borrow().get_x() as f64 && y >= image_offset.borrow().get_y() as f64
-                && x <= (picture.width() as i64 - image_offset.borrow().get_x()) as f64 && y <= (picture.height() as i64 - image_offset.borrow().get_y()) as f64{
-                    print!("click");
-
-                    let crop_area = CropArea::new_with_params(x as i64, y as i64, 0, 0);
-                    window_3.set_crop_area(crop_area);
-                    println!("area: {:?}", window_3.imp().crop_area.borrow());
+            let crop_mode = window_6.imp().crop_mode.borrow().clone();
+            if crop_mode == 0 {
+                let crop_area = window_6.imp().crop_area.clone();
+                let rectangle_exist = crop_area.borrow().get_end_x()
+                    != crop_area.borrow().get_start_x()
+                    && crop_area.borrow().get_end_y() != crop_area.borrow().get_start_y();
+                if rectangle_exist {
+                    let x_start = crop_area.borrow().get_start_x();
+                    let y_start = crop_area.borrow().get_start_y();
+                    let x_end = crop_area.borrow().get_end_x();
+                    let y_end = crop_area.borrow().get_end_y();
+                    let new_crop_area = CropArea::new_with_params(x_start, y_start, x_end, y_end);
+                    window_6.set_crop_area(new_crop_area);
+                    window_6.set_crop_mode(1);
                 }
-            }),
-        );
-        // Gestione del rilascio del mouse
-        let window_3 = self.clone();
-        gesture_drag_clone.connect_drag_update(
-            clone!(@strong drawing_area_clone => move |_, offset_x, offset_y| {
-                //println!("drag update");
-                {let image_offset = window_3.imp().image_offset.clone();
-                let image = window_3.imp().image.clone();
-                let mut area = window_3.imp().crop_area.borrow_mut();
-                //println!("area: {:?}", area);
-                let crop_mode_active = window_3.imp().crop_mode_active.clone();
-                if *crop_mode_active.borrow() && area.get_start_x() >= image_offset.borrow().get_x() && area.get_start_y() >= image_offset.borrow().get_y()
-                && area.get_start_x() <= (image.width() as i64-image_offset.borrow().get_x()) && area.get_start_y() <= (image.height() as i64 -image_offset.borrow().get_y()){
-                    let end_x = min(max(area.get_start_x() + offset_x as i64, image_offset.borrow().get_x()), image.width() as i64 - image_offset.borrow().get_x());
-                    area.set_end_x(end_x);
-                    let end_y = min(max(area.get_start_y() + offset_y as i64, image_offset.borrow().get_y()), image.height() as i64 - image_offset.borrow().get_y());
-                    area.set_end_y(end_y);
-                    drawing_area_clone.queue_draw();
-                }}
+            } else if crop_mode == 1 {
+                let drawing_area_clone = window_6.imp().drawing_area.clone();
+                let crop_area = window_6.imp().crop_area.clone();
+                let x_start = crop_area.borrow().get_new_start_x();
+                let y_start = crop_area.borrow().get_new_start_y();
+                let x_end = crop_area.borrow().get_new_end_x();
+                let y_end = crop_area.borrow().get_new_end_y();
+                let new_crop_area = CropArea::new_with_params(x_start, y_start, x_end, y_end);
+                window_6.set_crop_area(new_crop_area);
 
-                window_3.update_confirm_action_state();
-            }));
-        let window_4 = self.clone();
-        gesture_drag_clone.connect_drag_end(move |_, _, _| {
-            println!("drag end");
-            let mut area = window_4.imp().crop_area.borrow_mut();
-            println!("area: {:?}", area);
-            //check if the area of the rectangle is bigger than 0
-            let crop_mode_active = window_4.imp().crop_mode_active.clone();
-            if *crop_mode_active.borrow() && area.get_start_x() != area.get_end_x() && area.get_start_y() != area.get_end_y(){
-                println!("MUOIOOOOOOO");
-                *crop_mode_active.borrow_mut() = false;
-
-                let offset_x = window_4.imp().image_offset.borrow().get_x();
-                let offset_y = window_4.imp().image_offset.borrow().get_y();
-
-                let x_start_temp = min(area.get_start_x(), area.get_end_x()) - offset_x;
-                let y_start_temp = min(area.get_start_y(), area.get_end_y()) - offset_y;
-                let x_end_temp = max(area.get_start_x(), area.get_end_x()) - offset_x;
-                let y_end_temp = max(area.get_start_y(), area.get_end_y()) - offset_y;
-
-                let pixbuf = window_4.imp().pixbuf.clone().into_inner();
-                let image = window_4.imp().image.clone();
-
-                let width_pixbuf = pixbuf.width() as i64;
-                let height_pixbuf = pixbuf.height() as i64;
-                let width_image = image.width() as i64 - (offset_x * 2);
-                let height_image = image.height() as i64 - (offset_y * 2);
-
-                let x_start = ((x_start_temp as f64 / width_image as f64) * width_pixbuf as f64).round() as i64;
-                let y_start = ((y_start_temp as f64 / height_image as f64) * height_pixbuf as f64).round() as i64;
-                let x_end = ((x_end_temp as f64 / width_image as f64) * width_pixbuf as f64).round() as i64;
-                let y_end = ((y_end_temp as f64 / height_image as f64) * height_pixbuf as f64).round() as i64;
-
-                let width = x_end - x_start;
-                let height = y_end - y_start;
-
-
-                let cropped_pixbuf = Pixbuf::new(pixbuf.colorspace(), pixbuf.has_alpha(), pixbuf.bits_per_sample(), width as i32, height as i32).unwrap();
-                pixbuf.copy_area(x_start as i32, y_start as i32, width as i32, height as i32, &cropped_pixbuf, 0, 0);
-                let image = window_4.imp().image.clone();
-                image.set_pixbuf(Some(&cropped_pixbuf));
-                window_4.set_pixbuf(cropped_pixbuf.clone());
-                let paintable = image.paintable();
-                if let Some(pain) = paintable {
-                    let image_offset = calculate_image_dimension(image.width(), image.height(), pain.intrinsic_aspect_ratio());
-                    window_4.set_image_offset(image_offset);
-                }
+                let cursor_name = "grab";
+                set_cursor(
+                    x,
+                    x_start,
+                    x_end,
+                    y,
+                    y_start,
+                    y_end,
+                    drawing_area_clone,
+                    cursor_name,
+                );
+                window_6.set_side_selected(-1);
             }
-
-            area.set_start_x(0);
-            area.set_start_y(0);
-            area.set_end_x(0);
-            area.set_end_y(0);
-            let drawing_a = window_4.imp().drawing_area.clone();
-            drawing_a.queue_draw();
-        });*/
+        });
 
         self.add_action(&crop);
     }
@@ -785,10 +754,10 @@ fn set_cursor(
     drawing_area_clone: gtk::DrawingArea,
     name: &str,
 ) {
-    if (x as i64 - x_start).abs() < 10
-        || (x as i64 - x_end).abs() < 10
-        || (y as i64 - y_start).abs() < 10
-        || (y as i64 - y_end).abs() < 10
+    if ((x as i64 - x_start).abs() < 10 && y as i64 > y_start && ((y as i64) < y_end))
+        || ((x as i64 - x_end).abs() < 10 && (y as i64 > y_start) && ((y as i64) < y_end))
+        || ((y as i64 - y_start).abs() < 10 && (x as i64 > x_start) && ((x as i64) < x_end))
+        || ((y as i64 - y_end).abs() < 10 && (x as i64 > x_start) && ((x as i64) < x_end))
     {
         let cursor = gdk::Cursor::from_name(name, None);
         drawing_area_clone.set_cursor(Some(&cursor.unwrap()));
@@ -797,12 +766,6 @@ fn set_cursor(
         drawing_area_clone.set_cursor(None);
     }
 }
-
-// fn reset_cursor(drawing_area_clone: gtk::DrawingArea) {
-//     let cursor = gdk::Cursor::from_name("default", None);
-//     drawing_area_clone.set_cursor(Some(&cursor.unwrap()));
-// }
-
 fn calculate_image_offset(width: i32, height: i32, aspect_ratio: f64) -> ImageOffset {
     let x = (width as f64 - (height as f64 * aspect_ratio)) / 2.0;
     if x > 0.0 {
@@ -812,18 +775,18 @@ fn calculate_image_offset(width: i32, height: i32, aspect_ratio: f64) -> ImageOf
         ImageOffset::new_with_params(0, y as i64, aspect_ratio)
     }
 }
-fn calculate_crop_area(
-    x_offset: i64,
-    y_offset: i64,
-    width_image: i64,
-    height_image: i64,
-) -> CropArea {
-    let x_start = x_offset;
-    let y_start = y_offset;
-    let x_end = width_image - x_offset;
-    let y_end = height_image - y_offset;
-    CropArea::new_with_params(x_start, y_start, x_end, y_end)
-}
+// fn calculate_crop_area(
+//     x_offset: i64,
+//     y_offset: i64,
+//     width_image: i64,
+//     height_image: i64,
+// ) -> CropArea {
+//     let x_start = x_offset;
+//     let y_start = y_offset;
+//     let x_end = width_image - x_offset;
+//     let y_end = height_image - y_offset;
+//     CropArea::new_with_params(x_start, y_start, x_end, y_end)
+// }
 
 fn is_crop_area_invalid(crop_area: &CropArea) -> bool {
     crop_area.get_start_x() == crop_area.get_end_x()
@@ -833,8 +796,6 @@ fn is_crop_area_invalid(crop_area: &CropArea) -> bool {
             && crop_area.get_end_x() == 0
             && crop_area.get_end_y() == 0)
 }
-
-
 
 pub fn get_monitor_names() -> Vec<String> {
     let display = gdk::Display::default().unwrap();
