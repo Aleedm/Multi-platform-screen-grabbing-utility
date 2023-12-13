@@ -15,7 +15,7 @@ use std::{
     thread,
     time::Duration,
 };
-
+use chrono::{Local, DateTime};
 use crate::screenshot::screenshot;
 use crate::settings_modal::SettingsModal;
 use crate::utility::{CropArea, ImageOffset};
@@ -59,7 +59,9 @@ impl MainWindow {
                     let settings_manager_from_setting_modal = settings_clone.get_settings_manager();
                     let shortcuts = settings_manager_from_setting_modal.clone().unwrap().get_screen_shortcut();
                     window_clone.update_shortcut(&[&shortcuts]);
+                    //window_clone.imp().settings_manager = settings_manager_from_setting_modal;
                     dialog.hide();
+                    println!("{:?}", window_clone.imp().settings_manager.clone());
                     Propagation::Stop
                 });
             }
@@ -294,9 +296,21 @@ impl MainWindow {
                 ("Save", ResponseType::Accept),
             ]);
 
-            // Imposta un nome di file predefinito, se necessario
-            dialog.set_current_name("untitled.png");
-
+            //Filenames based on the current date and time
+            let now: DateTime<Local> = Local::now();
+            
+            // Format the timestamp into a string like "ScreenGrab_2023-07-16T14-20-30.png"
+            let timestamp_str = now.format("ScreenGrab_%Y-%m-%dT%H-%M-%S.png").to_string();
+            
+            
+            dialog.set_current_name(&timestamp_str);
+            // Imposta la directory iniziale del dialogo
+            if let Some(default_folder) = window.imp().settings_manager.clone() {
+                let path_str = default_folder.get_save_dir();
+                let path = PathBuf::from(path_str.as_str());
+                let file = gio::File::for_path(&path);
+                let _ = dialog.set_current_folder(Some(&file));
+            }
             // Mostra la finestra di dialogo e attendi la risposta dell'utente
             dialog.show();
             dialog.run_async(clone!(@strong pixbuf_clone => move |obj, answer| {
