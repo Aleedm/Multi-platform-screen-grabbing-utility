@@ -68,6 +68,9 @@
             </child>
           </object>
         </property>
+        <style>
+          <class name="screenshot-button"/>  
+        </style>
       </object>
     </child>
     <!-- Monitors -->
