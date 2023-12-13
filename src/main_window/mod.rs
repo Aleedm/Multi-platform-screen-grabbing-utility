@@ -46,8 +46,28 @@ impl MainWindow {
         *imp.monitors.borrow_mut() = new_monitors;
     }
 
+    /* multi-monitor support  */
     pub fn setup_monitors(&self){
         let monitors = get_monitor_names();
+        
+
+        self.imp().menubar.populate_monitors_menu(monitors.clone());
+
+        let select_monitor = gio::SimpleAction::new("select_monitor", Some(&VariantType::new("t").unwrap()));
+            select_monitor.connect_activate(move |action, parameter| {
+                let index = parameter
+                    .unwrap()
+                    .get::<u32>()
+                    .expect("The value should be of type usize");
+    
+                //action.set_state(parameter.unwrap());
+                println!("{}", index);
+                //temp_self.imp().menubar.update_delay(delay_value);
+                // Set the state of the action to the new delay value
+                //action.set_state(&parameter.unwrap());
+            });
+
+        self.add_action(&select_monitor);
         self.set_monitors(monitors);
     }
 

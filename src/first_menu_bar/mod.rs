@@ -1,7 +1,7 @@
 mod imp;
 use gtk4 as gtk;
 
-use gtk::{glib, subclass::prelude::*};
+use gtk::{glib, prelude::*, subclass::prelude::*, gio};
 
 glib::wrapper! {
     pub struct FirstMenuBar(ObjectSubclass<imp::FirstMenuBar>)
@@ -30,5 +30,21 @@ impl FirstMenuBar {
             _ => "Tempo di ritardo sconosciuto", // Default case
         };
         self.imp().delay_label.set_label(label_text); // Update the label
+    }
+
+    pub fn populate_monitors_menu(&self, monitors:Vec<String>){
+        if monitors.len() > 1 {
+            let menu = gio::Menu::new();
+            for (index, monitor) in monitors.iter().enumerate() {
+                let menu_item = gio::MenuItem::new(Some(&monitor), Some("win.select_monitor"));
+                let index_variant = (index as u32).to_variant();
+                menu_item.set_attribute_value("target", Some(&index_variant));
+                menu.append_item(&menu_item);
+            }
+            self.imp().monitors_menu.set_menu_model(Some(&menu));
+        } else {
+            self.imp().monitors_menu.hide();
+        }
+        
     }
 }

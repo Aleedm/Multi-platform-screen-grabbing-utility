@@ -39,6 +39,11 @@
     </section>
   </menu>
 
+  <menu id="monitors_menu">
+    <section>
+      
+    </section>
+  </menu>
 
   <template class="FirstMenuBar" parent="GtkBox">
   <!-- Delay option -->
@@ -59,6 +64,32 @@
             <child>
               <object class="GtkLabel">
                 <property name="label">New Screenshot</property>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
+    <!-- Monitors -->
+    <child>
+      <object class="GtkMenuButton" id="monitors_menu">
+        <property name="menu-model">monitors_menu</property>
+        <property name="primary">True</property>
+        <property name="tooltip-text" translatable="yes">Select monitor</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkLabel"  id="monitors_label">
+                <property name="label">Prova</property>
+                <style>
+                  <class name="title"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pan-down-symbolic</property>
               </object>
             </child>
           </object>
