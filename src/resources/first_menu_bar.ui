@@ -81,7 +81,7 @@
             <property name="spacing">6</property>
             <child>
               <object class="GtkLabel"  id="monitors_label">
-                <property name="label">Prova</property>
+                <property name="label">Monitors</property>
                 <style>
                   <class name="title"/>
                 </style>

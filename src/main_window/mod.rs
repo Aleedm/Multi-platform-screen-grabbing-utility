@@ -53,15 +53,16 @@ impl MainWindow {
     pub fn setup_monitors(&self){
         let monitors = get_monitor_names();
         self.imp().menubar.populate_monitors_menu(monitors.clone());
-
+        let monitors_clone = monitors.clone();
         let window = self.clone();
         let select_monitor = gio::SimpleAction::new("select_monitor", Some(&VariantType::new("u").unwrap()));
-            select_monitor.connect_activate(move |action, parameter| {
+            select_monitor.connect_activate(move |_, parameter| {
                 let index = parameter
                     .unwrap()
                     .get::<u32>()
                     .expect("The value should be of type usize");
                 window.set_current_monitor(index);
+                window.imp().menubar.imp().monitors_label.set_label(monitors_clone[index as usize].as_str());
             });
 
         self.add_action(&select_monitor);
