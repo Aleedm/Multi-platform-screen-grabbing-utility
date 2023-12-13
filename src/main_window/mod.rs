@@ -301,8 +301,7 @@ impl MainWindow {
             
             // Format the timestamp into a string like "ScreenGrab_2023-07-16T14-20-30.png"
             let timestamp_str = now.format("ScreenGrab_%Y-%m-%dT%H-%M-%S.png").to_string();
-            
-            
+        
             dialog.set_current_name(&timestamp_str);
             // Imposta la directory iniziale del dialogo
             if let Some(default_folder) = window.imp().settings_manager.clone() {
