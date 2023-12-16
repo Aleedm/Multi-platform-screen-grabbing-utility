@@ -75,3 +75,9 @@ menubutton button:hover {
     box-shadow: none;
 }
 
+
+.label-setting {
+    font-size: 14px;
+    text-align: left;
+    margin-left: 10px;
+}

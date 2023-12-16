@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="EditMenuBar" parent="GtkBox">
+  <!-- <child>
+    <object class="GtkSeparator" id="separator_l">
+      <property name="visible">True</property>
+      <property name="orientation">horizontal</property>
+      <property name="hexpand">True</property>
+      <style>
+        <class name="app-background"/>
+      </style>
+    </object>
+  </child> -->
   <!-- Crop -->
     <child>
       <object class="GtkButton" id="crop">
@@ -77,7 +87,17 @@
         <class name="right-button"/>
       </style>
       </object>
-    </child>       
+    </child>    
+    <!-- <child>
+      <object class="GtkSeparator" id="separator_r">
+        <property name="visible">True</property>
+        <property name="orientation">horizontal</property>
+        <property name="hexpand">True</property>
+        <style>
+          <class name="app-background"/>
+        </style>
+      </object>
+    </child>    -->
   </template>
 </interface>
 

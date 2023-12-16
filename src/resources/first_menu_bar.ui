@@ -118,13 +118,6 @@
       </object>
     </child>
 
-    <!-- EditMenu -->
-    <child>
-      <object class="EditMenuBar" id="edit">
-      </object>
-    </child>
-
-
     <child>
       <object class="GtkSeparator" id="separator">
         <property name="visible">True</property>
@@ -133,6 +126,12 @@
         <style>
           <class name="app-background"/>
         </style>
+      </object>
+    </child>
+
+    <!-- EditMenu -->
+    <child>
+      <object class="EditMenuBar" id="edit">
       </object>
     </child>
 

@@ -1,100 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="SettingsModal" parent="GtkApplicationWindow">
+    <property name="default-width">500</property>
+    <property name="default-height">200</property>
+    <property name="resizable">False</property>
     <property name="title">Settings</property>
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
+        <property name="valign">center</property> <!-- Centra la griglia verticalmente -->
+        <property name="hexpand">True</property>  <!-- Espande la Box orizzontalmente -->
+        <property name="vexpand">True</property>  <!-- Espande la Box verticalmente -->
+        <property name="halign">fill</property>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">horizontal</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="label">Shortcut</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkEntry" id="shortcut_entry">
-                <property name="text" translatable="yes">shortcut</property>
-                <property name="editable">False</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="edit_shortcut_button">
-                <property name="label">edit</property>
-                <property name="action-name">win.edit_shortcut</property>
-                <style>
-                  <class name="button"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="edit_ss">
+          <object class="GtkGrid">
+            <property name="row-spacing">30</property>
+            <property name="column-spacing">10</property>
+            <property name="column-homogeneous">True</property>
+            <property name="hexpand">True</property>  <!-- Espande la Grid orizzontalmente -->
+            <property name="halign">fill</property>   <!-- Allinea la Grid per riempire l'orizzontale -->
                 <child>
-                  <object class="GtkButton">
-                  <property name="label" translatable="yes">Save</property>
-                  <property name="tooltip-text" translatable="yes">Save new shortcut</property>
-                  <property name="action-name">win.save_shortcut</property>
-                  <style>
-                    <class name="button"/>
-                  </style>
+                  <object class="GtkLabel">
+                    <property name="label">Shortcut</property>
+                    <property name="halign">start</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                    </layout>
+                    <style>
+                      <class name="label-setting"/>
+                    </style>
                   </object>
-                </child> 
+                </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Discard</property>
-                    <property name="tooltip-text" translatable="yes">Discard changes</property>
-                    <property name="action-name">win.discard_shortcut</property>
+                  <object class="GtkEntry" id="shortcut_entry">
+                    <property name="text" translatable="yes">shortcut</property>
+                    <property name="editable">False</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="edit_shortcut_button">
+                    <property name="label">edit</property>
+                    <property name="action-name">win.edit_shortcut</property>
                     <style>
                       <class name="button"/>
                     </style>
-                  </object> 
-                </child>  
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="orientation">horizontal</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="label">Default save directory</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkEntry" id="directory_entry">
-                <property name="text" translatable="yes">path</property>
-                <property name="editable">False</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="edit_directory">
-                <property name="label">edit</property>
-                <property name="action-name">win.edit_directory</property>
-                <style>
-                  <class name="button"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="edit_dir">
-                <child>
-                  <object class="GtkButton">
-                  <property name="label" translatable="yes">Save</property>
-                  <property name="tooltip-text" translatable="yes">Save new default directory</property>
-                  <property name="action-name">win.save_directory</property>
+                    <layout>
+                      <property name="column">2</property>
+                      <property name="row">0</property>
+                    </layout>
                   </object>
-                </child> 
+                </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Discard</property>
-                    <property name="tooltip-text" translatable="yes">Discard changes</property>
-                    <property name="action-name">win.discard_directory</property>
+                  <object class="GtkBox" id="edit_ss">
+                    <child>
+                      <object class="GtkButton">
+                      <property name="label" translatable="yes">Save</property>
+                      <property name="tooltip-text" translatable="yes">Save new shortcut</property>
+                      <property name="action-name">win.save_shortcut</property>
+                      <style>
+                        <class name="button"/>
+                      </style>
+                      </object>
+                    </child> 
+                    <child>
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">Discard</property>
+                        <property name="tooltip-text" translatable="yes">Discard changes</property>
+                        <property name="action-name">win.discard_shortcut</property>
+                        <style>
+                          <class name="button"/>
+                        </style>
+                      </object> 
+                    </child>
+                    <layout>
+                      <property name="column">2</property>
+                      <property name="row">0</property>
+                    </layout>  
                   </object>
-                </child>  
-              </object>
-            </child>
+                </child>
+                
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="orientation">horizontal</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                      <property name="column-span">3</property>
+                    </layout>
+                  </object>
+                </child>
+                
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Default save directory</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                    </layout>
+                    <style>
+                      <class name="label-setting"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="directory_entry">
+                    <property name="text" translatable="yes">path</property>
+                    <property name="editable">False</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="edit_directory">
+                    <property name="label">edit</property>
+                    <property name="action-name">win.edit_directory</property>
+                    <style>
+                      <class name="button"/>
+                    </style>
+                    <layout>
+                      <property name="column">2</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="edit_dir">
+                    <child>
+                      <object class="GtkButton">
+                      <property name="label" translatable="yes">Save</property>
+                      <property name="tooltip-text" translatable="yes">Save new default directory</property>
+                      <property name="action-name">win.save_directory</property>
+                      <style>
+                        <class name="button"/>
+                      </style>
+                      </object>
+                    </child> 
+                    <child>
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">Discard</property>
+                        <property name="tooltip-text" translatable="yes">Discard changes</property>
+                        <property name="action-name">win.discard_directory</property>
+                        <style>
+                          <class name="button"/>
+                        </style>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">2</property>
+                      <property name="row">2</property>
+                    </layout>  
+                  </object>
+                </child>
           </object>
         </child>
       </object>
