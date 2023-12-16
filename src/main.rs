@@ -13,7 +13,7 @@ use gtk::{
     gdk, gio,
     glib::{self, subclass::types::ObjectSubclassIsExt},
     prelude::*,
-    CssProvider, StyleContext,
+    CssProvider, style_context_add_provider_for_display,
 };
 use main_window::MainWindow;
 fn main() -> glib::ExitCode {
@@ -24,7 +24,7 @@ fn main() -> glib::ExitCode {
     provider.load_from_path("src/css/style.css");
 
     if let Some(display) = gdk::Display::default() {
-        StyleContext::add_provider_for_display(
+        style_context_add_provider_for_display(
             &display,
             &provider,
             gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
