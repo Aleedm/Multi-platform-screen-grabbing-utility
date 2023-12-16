@@ -29,7 +29,7 @@ impl SettingsModal {
         self.imp().settings_manager.borrow().clone()
     }
 
-    /* Function to set the settings manager */
+   
     pub fn set_settings_manager(&self, settings_manager: Settings) {
         *self.imp().settings_manager.borrow_mut() = Some(settings_manager);
         let settings = self
@@ -62,7 +62,6 @@ impl SettingsModal {
             let flag = mods.is_empty();
 
             let shortcut = accelerator_name(keyval, mods);
-            println!("Shortcut: {}", shortcut);
             if !flag && edit_ss.is_visible() {
                 window.imp().shortcut_entry.set_text(shortcut.as_str());
             }
@@ -106,7 +105,7 @@ impl SettingsModal {
                 settings.set_screen_shortcut(new_shortcut.clone());
             }
 
-            // Salva l'oggetto Settings aggiornato nel file di configurazione
+            
             if let Some(settings) = settings_manager.clone() {
                 settings.write_settings("config.json".to_string());
             }
@@ -164,7 +163,7 @@ impl SettingsModal {
         let save_directory = gio::SimpleAction::new("save_directory", None);
         let window = self.clone();
         save_directory.connect_activate(move |_, _| {
-            //Save changes
+            
             window.imp().edit_directory.show();
             window.imp().edit_dir.hide();
             window.imp().directory_entry.set_can_focus(false);
@@ -185,7 +184,7 @@ impl SettingsModal {
         let discard_directory = gio::SimpleAction::new("discard_directory", None);
         let window = self.clone();
         discard_directory.connect_activate(move |_, _| {
-            //discard changes
+            
             window.imp().edit_directory.show();
             window.imp().edit_dir.hide();
             let old_dir = window

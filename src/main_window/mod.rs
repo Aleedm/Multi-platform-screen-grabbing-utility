@@ -114,14 +114,9 @@ impl MainWindow {
                         .clone()
                         .unwrap()
                         .get_save_dir();
+                    eprintln!("dir: {}", dir);
                     window_clone.update_shortcut(&[&shortcuts]);
-                    println!(
-                        "shortcuts: {:?}",
-                        window_clone.imp().settings_manager.clone()
-                    );
-                    println!("dir: {:?}", dir);
                     dialog.hide();
-                    println!("{:?}", window_clone.imp().settings_manager.clone());
                     Propagation::Stop
                 });
             }
@@ -371,10 +366,9 @@ impl MainWindow {
                     if let Some(filename) = obj.current_name() {
                         let mut path = PathBuf::from(obj.current_folder().unwrap().path().unwrap());
                         path.push(filename);
-                        println!("Salvataggio dell'immagine in: {:?}", path);
 
                         if let Err(err) = pixbuf_clone.savev(&path, "png", &[]) {
-                            eprintln!("Errore nel salvataggio dell'immagine: {}", err);
+                            eprintln!("Error while saving the image: {}", err);
                         }
                     }
                 }
@@ -552,7 +546,6 @@ impl MainWindow {
                 {
                     let crop_area = CropArea::new_with_params(x as i64, y as i64, 0, 0);
                     window_4.set_crop_area(crop_area);
-                    println!("area: {:?}", window_4.imp().crop_area.borrow());
                 }
             } else if crop_mode == 1 {
                 let drawing_area_clone = window_4.imp().drawing_area.clone();
