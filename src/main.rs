@@ -50,7 +50,7 @@ fn main() -> glib::ExitCode {
 
 fn load_css() {
     let provider = CssProvider::new();
-    provider.load_from_resource("/org/mpsgu/css/style.css");
+    provider.load_from_resource("/org/mpsgu/style.css");
 
     if let Some(display) = gdk::Display::default() {
         style_context_add_provider_for_display(
