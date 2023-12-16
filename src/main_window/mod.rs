@@ -50,20 +50,26 @@ impl MainWindow {
     }
 
     /* multi-monitor support  */
-    pub fn setup_monitors(&self){
+    pub fn setup_monitors(&self) {
         let monitors = get_monitor_names();
         self.imp().menubar.populate_monitors_menu(monitors.clone());
         let monitors_clone = monitors.clone();
         let window = self.clone();
-        let select_monitor = gio::SimpleAction::new("select_monitor", Some(&VariantType::new("u").unwrap()));
-            select_monitor.connect_activate(move |_, parameter| {
-                let index = parameter
-                    .unwrap()
-                    .get::<u32>()
-                    .expect("The value should be of type usize");
-                window.set_current_monitor(index);
-                window.imp().menubar.imp().monitors_label.set_label(monitors_clone[index as usize].as_str());
-            });
+        let select_monitor =
+            gio::SimpleAction::new("select_monitor", Some(&VariantType::new("u").unwrap()));
+        select_monitor.connect_activate(move |_, parameter| {
+            let index = parameter
+                .unwrap()
+                .get::<u32>()
+                .expect("The value should be of type usize");
+            window.set_current_monitor(index);
+            window
+                .imp()
+                .menubar
+                .imp()
+                .monitors_label
+                .set_label(monitors_clone[index as usize].as_str());
+        });
 
         self.add_action(&select_monitor);
         self.set_monitors(monitors);
@@ -438,9 +444,15 @@ impl MainWindow {
         let window_1 = self.clone();
         drawing_area.set_draw_func(move |_, cr, width, height| {
             let crop_mode_active = window_1.imp().crop_mode_active.clone();
+            let image_offset = window_1.imp().image_offset.clone();
             if *crop_mode_active.borrow() {
-                cr.set_source_rgba(0.3, 0.3, 0.3, 0.8); // Colore grigio
-                cr.rectangle(0.0, 0.0, width as f64, height as f64);
+                cr.set_source_rgba(0.5, 0.5, 0.5, 0.7); // Colore grigio
+                cr.rectangle(
+                    image_offset.borrow().get_x() as f64,
+                    image_offset.borrow().get_y() as f64,
+                    width as f64 - (image_offset.borrow().get_x() * 2) as f64,
+                    height as f64 - (image_offset.borrow().get_y() * 2) as f64,
+                );
                 let _ = cr.fill();
 
                 let crop_area = window_1.imp().crop_area.clone();

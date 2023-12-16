@@ -3,8 +3,10 @@
 <interface>
   <!-- interface-name add_window.ui -->
   <template class="MainWindow" parent="GtkApplicationWindow">
-    <property name="default-width">400</property>
-    <property name="default-height">200</property>
+    <property name="default-width">600</property>
+    <property name="default-height">400</property>
+    <!--<property name="hexpand">False</property>
+    <property name="vexpand">False</property>-->
     <property name="title">Screen Grabbing</property>
 
     <child type="titlebar">
@@ -19,8 +21,8 @@
 
         <child>
           <object class="FirstMenuBar" id="menubar">
-             <style>
-              <class name="first-menu-bar"/>  
+            <style>
+              <class name="app-background"/>
             </style>
           </object>
         </child>
@@ -45,6 +47,9 @@
                 <property name="vexpand">True</property>
               </object>
             </child>
+            <style>
+              <class name="app-background"/>
+            </style>
           </object>
         </child>
         

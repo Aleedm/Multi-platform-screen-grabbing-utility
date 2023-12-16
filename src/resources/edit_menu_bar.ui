@@ -1,30 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="EditMenuBar" parent="GtkBox">
-  <!-- Save -->
+  <!-- Crop -->
     <child>
       <object class="GtkButton" id="crop">
-      <property name="label" translatable="yes">Crop</property>
+      <property name="child">
+          <object class="GtkBox">
+          <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">edit-cut-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Crop</property>
+              </object>
+            </child>
+          </object>
+        </property>
       <property name="tooltip-text" translatable="yes">Crop image</property>
-      <property name="action-name">win.crop</property>
+      <property name="action-name">win.crop</property>ù<style>
+        <class name="button"/>
+      </style>
       </object>
     </child> 
   <!-- Save -->
     <child>
       <object class="GtkButton" id="save">
-      <property name="label" translatable="yes">Save</property>
       <property name="tooltip-text" translatable="yes">Save image</property>
-      
       <property name="action-name">win.save_screen</property>
+      <property name="child">
+        <object class="GtkBox">
+          <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">insert-image-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Save</property>
+              </object>
+            </child>
+          </object>
+        </property>
+      <style>
+        <class name="button"/>
+        <class name="left-button"/>
+      </style>
       </object>
     </child>  
 
     <!-- Copy -->
     <child>
       <object class="GtkButton" id="copy">
-      <property name="label" translatable="yes">Copy</property>
-      <property name="tooltip-text" translatable="yes">Copy image to clipboard</property>
-      <property name="action-name">win.copy_screen</property>
+        <property name="child">
+          <object class="GtkBox">
+          <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">edit-copy-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Copy</property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="tooltip-text" translatable="yes">Copy image to clipboard</property>
+        <property name="action-name">win.copy_screen</property>
+      <style>
+        <class name="button"/>
+        <class name="right-button"/>
+      </style>
       </object>
     </child>       
   </template>

@@ -1,22 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="CropMenuBar" parent="GtkBox">
+    <!--<child>
+      <object class="GtkSeparator" id="separator_l">
+        <property name="visible">True</property>
+        <property name="orientation">horizontal</property>
+        <property name="hexpand">True</property>
+        <style>
+          <class name="app-background"/>
+        </style>
+      </object>
+    </child>
+    -->
   <!-- Confirm crop -->
     <child>
       <object class="GtkButton" id="confirm">
-      <property name="label" translatable="yes">Confirm </property>
+      <property name="child">
+          <object class="GtkBox">
+          <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">object-select-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Confirm</property>
+              </object>
+            </child>
+          </object>
+        </property>
       <property name="tooltip-text" translatable="yes">Confirm crop</property>
       <property name="action-name">win.confirm</property>
+      <style>
+        <class name="button"/>
+      </style>
       </object>
     </child> 
   <!-- Exit from crop mode -->
     <child>
       <object class="GtkButton" id="exit">
-      <property name="label" translatable="yes">Exit</property>
+      <property name="child">
+          <object class="GtkBox">
+          <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">window-close-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Exit</property>
+              </object>
+            </child>
+          </object>
+        </property>
       <property name="tooltip-text" translatable="yes">Exit from crop mode</property>
       <property name="action-name">win.exit</property>
+      <style>
+        <class name="button"/>
+      </style>
       </object>
     </child>   
+    <child>
+      <object class="GtkSeparator" id="separator_r">
+        <property name="visible">True</property>
+        <property name="orientation">horizontal</property>
+        <property name="hexpand">True</property>
+        <style>
+          <class name="app-background"/>
+        </style>
+      </object>
+    </child>
   </template>
 </interface>
 

@@ -23,6 +23,9 @@
               <object class="GtkButton" id="edit_shortcut_button">
                 <property name="label">edit</property>
                 <property name="action-name">win.edit_shortcut</property>
+                <style>
+                  <class name="button"/>
+                </style>
               </object>
             </child>
             <child>
@@ -32,6 +35,9 @@
                   <property name="label" translatable="yes">Save</property>
                   <property name="tooltip-text" translatable="yes">Save new shortcut</property>
                   <property name="action-name">win.save_shortcut</property>
+                  <style>
+                    <class name="button"/>
+                  </style>
                   </object>
                 </child> 
                 <child>
@@ -39,6 +45,9 @@
                     <property name="label" translatable="yes">Discard</property>
                     <property name="tooltip-text" translatable="yes">Discard changes</property>
                     <property name="action-name">win.discard_shortcut</property>
+                    <style>
+                      <class name="button"/>
+                    </style>
                   </object> 
                 </child>  
               </object>
@@ -63,6 +72,9 @@
               <object class="GtkButton" id="edit_directory">
                 <property name="label">edit</property>
                 <property name="action-name">win.edit_directory</property>
+                <style>
+                  <class name="button"/>
+                </style>
               </object>
             </child>
             <child>

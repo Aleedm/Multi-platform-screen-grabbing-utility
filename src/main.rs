@@ -21,7 +21,7 @@ fn main() -> glib::ExitCode {
     gtk::init().expect("Unable to start GTK");
 
     let provider = CssProvider::new();
-    provider.load_from_path("src/css/prova.css");
+    provider.load_from_path("src/css/style.css");
 
     if let Some(display) = gdk::Display::default() {
         StyleContext::add_provider_for_display(
