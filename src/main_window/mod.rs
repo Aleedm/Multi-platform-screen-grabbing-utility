@@ -170,12 +170,10 @@ impl MainWindow {
                 .get::<u64>()
                 .expect("The value should be of type u64");
 
-            action.set_state(parameter.unwrap());
+            //action.set_state(&parameter.unwrap());
 
             // Get the FirstMenuBar instance and call the update_delay method
             temp_self.imp().menubar.update_delay(delay_value);
-            // Set the state of the action to the new delay value
-            action.set_state(&parameter.unwrap());
         });
         self.add_action(&set_delay);
     }
