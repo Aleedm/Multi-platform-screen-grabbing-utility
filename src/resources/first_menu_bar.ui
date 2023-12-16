@@ -4,22 +4,22 @@
   <menu id="primary_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">Nessun ritardo</attribute>
+        <attribute name="label" translatable="yes">No delay</attribute>
         <attribute name="action">win.set_delay</attribute>
         <attribute name="target" type="t">0</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Ritardo di 3 secondi</attribute>
+        <attribute name="label" translatable="yes">3 second delay</attribute>
         <attribute name="action">win.set_delay</attribute>
         <attribute name="target" type="t">3</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Ritardo di 5 secondi</attribute>
+        <attribute name="label" translatable="yes">5 second delay</attribute>
         <attribute name="action">win.set_delay</attribute>
         <attribute name="target" type="t">5</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">Ritardo di 10 secondi</attribute>
+        <attribute name="label" translatable="yes">10 second delay</attribute>
         <attribute name="action">win.set_delay</attribute>
         <attribute name="target" type="t">10</attribute>
       </item>
@@ -29,7 +29,7 @@
   <menu id="side_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">Schortcuts</attribute>
+        <attribute name="label" translatable="yes">Shortcuts</attribute>
         <attribute name="action">win.show-help-overlay</attribute>
       </item>
       <item>

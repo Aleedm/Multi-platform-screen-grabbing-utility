@@ -20,17 +20,6 @@ fn main() -> glib::ExitCode {
 
     gtk::init().expect("Unable to start GTK");
 
-    let provider = CssProvider::new();
-    provider.load_from_path("src/css/style.css");
-
-    if let Some(display) = gdk::Display::default() {
-        style_context_add_provider_for_display(
-            &display,
-            &provider,
-            gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
-        );
-    }
-
     gio::resources_register_include!("compiled.gresource").unwrap();
 
     let application = gtk::Application::builder()
@@ -40,6 +29,7 @@ fn main() -> glib::ExitCode {
     application.connect_activate(move |app| {
         let app1 = app.clone();
         let win: MainWindow = MainWindow::new(app);
+        load_css();
         win.set_application(app.clone());
         let shortcut = win
             .imp()
@@ -56,4 +46,17 @@ fn main() -> glib::ExitCode {
         });
     });
     application.run()
+}
+
+fn load_css() {
+    let provider = CssProvider::new();
+    provider.load_from_resource("/org/mpsgu/css/style.css");
+
+    if let Some(display) = gdk::Display::default() {
+        style_context_add_provider_for_display(
+            &display,
+            &provider,
+            gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        );
+    }
 }

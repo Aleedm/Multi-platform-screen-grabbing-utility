@@ -23,11 +23,11 @@ impl FirstMenuBar {
     pub fn update_delay(&self, delay: u64) {
         self.set_delay(delay); 
         let label_text = match delay {
-            0 => "Nessun ritardo",
-            3 => "Ritardo di 3 secondi",
-            5 => "Ritardo di 5 secondi",
-            10 => "Ritardo di 10 secondi",
-            _ => "Tempo di ritardo sconosciuto", 
+            0 => "No delay",
+            3 => "3 second delay",
+            5 => "5 second delay",
+            10 => "10 second delay",
+            _ => "unknown delay", 
         };
         self.imp().delay_label.set_label(label_text); 
     }
