@@ -496,22 +496,9 @@ impl MainWindow {
                 let y_end = crop_area.borrow().get_end_y();
                 let side_selected = window_3.imp().side_selected.borrow().clone();
 
-                let cursor_name;
                 if side_selected == -1 {
-                    cursor_name = "grab";
-                } else {
-                    cursor_name = "grabbing";
+                    set_cursor(x, x_start, x_end, y, y_start, y_end, drawing_area_clone);
                 }
-                set_cursor(
-                    x,
-                    x_start,
-                    x_end,
-                    y,
-                    y_start,
-                    y_end,
-                    drawing_area_clone,
-                    cursor_name,
-                );
             } else if crop_mode == 0 {
                 let picture = window_3.imp().image.clone();
                 let image_offset = window_3.imp().image_offset.clone();
@@ -572,20 +559,16 @@ impl MainWindow {
                     && ((x as i64) < x_end)
                 {
                     window_4.set_side_selected(3); // 3 = bottom
+                } else if (x as i64) > x_start
+                    && ((x as i64) < x_end)
+                    && (y as i64) > y_start
+                    && ((y as i64) < y_end)
+                {
+                    window_4.set_side_selected(4); // 4 = center
                 } else {
                     window_4.set_side_selected(-1);
                 }
-                let cursor_name = "grabbing";
-                set_cursor(
-                    x,
-                    x_start,
-                    x_end,
-                    y,
-                    y_start,
-                    y_end,
-                    drawing_area_clone,
-                    cursor_name,
-                );
+                set_cursor(x, x_start, x_end, y, y_start, y_end, drawing_area_clone);
                 if (x as i64 - x_start).abs() < 10
                     || (x as i64 - x_end).abs() < 10
                     || (y as i64 - y_start).abs() < 10
@@ -636,6 +619,39 @@ impl MainWindow {
                                 area.set_new_end_y(end_y);
                                 drawing_area_clone.queue_draw();
                             }
+                            else if *side_selected.borrow() == 4 {
+                                let current_width = area.get_end_x() - area.get_start_x();
+                                let current_height = area.get_end_y() - area.get_start_y();
+                            
+                                let mut new_start_x = area.get_start_x() + offset_x as i64;
+                                let mut new_start_y = area.get_start_y() + offset_y as i64;
+                            
+                                // Assicurati che il nuovo inizio non vada oltre i limiti dell'immagine
+                                new_start_x = max(image_offset.borrow().get_x(), new_start_x);
+                                new_start_y = max(image_offset.borrow().get_y(), new_start_y);
+                            
+                                // Calcola la nuova posizione di fine basandoti sulle dimensioni attuali
+                                let mut new_end_x = new_start_x + current_width;
+                                let mut new_end_y = new_start_y + current_height;
+                            
+                                // Verifica che la fine non vada oltre i limiti dell'immagine
+                                if new_end_x > image.width() as i64 - image_offset.borrow().get_x() {
+                                    new_end_x = image.width() as i64 - image_offset.borrow().get_x();
+                                    new_start_x = new_end_x - current_width; // Ajusta la posizione iniziale per mantenere la larghezza
+                                }
+                                if new_end_y > image.height() as i64 - image_offset.borrow().get_y() {
+                                    new_end_y = image.height() as i64 - image_offset.borrow().get_y();
+                                    new_start_y = new_end_y - current_height; // Ajusta la posizione iniziale per mantenere l'altezza
+                                }
+                            
+                                area.set_new_start_x(new_start_x);
+                                area.set_new_start_y(new_start_y);
+                                area.set_new_end_x(new_end_x);
+                                area.set_new_end_y(new_end_y);
+                            
+                                drawing_area_clone.queue_draw();
+                            }
+                            
                         }
                     }
                 }
@@ -669,20 +685,16 @@ impl MainWindow {
                 let y_start = crop_area.borrow().get_new_start_y();
                 let x_end = crop_area.borrow().get_new_end_x();
                 let y_end = crop_area.borrow().get_new_end_y();
-                let new_crop_area = CropArea::new_with_params(x_start, y_start, x_end, y_end);
+
+                let r_x_start = if x_start > x_end { x_end } else { x_start };
+                let r_x_end = if x_start > x_end { x_start } else { x_end };
+                let r_y_start = if y_start > y_end { y_end } else { y_start };
+                let r_y_end = if y_start > y_end { y_start } else { y_end };
+
+                let new_crop_area = CropArea::new_with_params(r_x_start, r_y_start, r_x_end, r_y_end);
                 window_6.set_crop_area(new_crop_area);
 
-                let cursor_name = "grab";
-                set_cursor(
-                    x,
-                    x_start,
-                    x_end,
-                    y,
-                    y_start,
-                    y_end,
-                    drawing_area_clone,
-                    cursor_name,
-                );
+                set_cursor(x, x_start, x_end, y, y_start, y_end, drawing_area_clone);
                 window_6.set_side_selected(-1);
             }
         });
@@ -719,14 +731,23 @@ fn set_cursor(
     y_start: i64,
     y_end: i64,
     drawing_area_clone: gtk::DrawingArea,
-    name: &str,
 ) {
     if ((x as i64 - x_start).abs() < 10 && y as i64 > y_start && ((y as i64) < y_end))
         || ((x as i64 - x_end).abs() < 10 && (y as i64 > y_start) && ((y as i64) < y_end))
-        || ((y as i64 - y_start).abs() < 10 && (x as i64 > x_start) && ((x as i64) < x_end))
+    {
+        let cursor = gdk::Cursor::from_name("ew-resize", None);
+        drawing_area_clone.set_cursor(Some(&cursor.unwrap()));
+    } else if ((y as i64 - y_start).abs() < 10 && (x as i64 > x_start) && ((x as i64) < x_end))
         || ((y as i64 - y_end).abs() < 10 && (x as i64 > x_start) && ((x as i64) < x_end))
     {
-        let cursor = gdk::Cursor::from_name(name, None);
+        let cursor = gdk::Cursor::from_name("ns-resize", None);
+        drawing_area_clone.set_cursor(Some(&cursor.unwrap()));
+    } else if ((x as i64) > x_start)
+        && ((x as i64) < x_end)
+        && ((y as i64) > y_start)
+        && ((y as i64) < y_end)
+    {
+        let cursor = gdk::Cursor::from_name("move", None);
         drawing_area_clone.set_cursor(Some(&cursor.unwrap()));
     } else {
         drawing_area_clone.set_cursor(None);
