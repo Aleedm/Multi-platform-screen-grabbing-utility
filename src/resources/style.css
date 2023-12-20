@@ -1,4 +1,3 @@
-/* Classe per lo sfondo dell'app */
 .app-background {
     background: #ede7e3;
 }
@@ -8,13 +7,10 @@
     color: #ede7e3;
     border: none;
     padding: 8px 16px;
-    text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 14px;
     margin: 4px 2px;
     transition-duration: 0.4s;
-    cursor: pointer;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -30,13 +26,10 @@ menubutton button {
     color: #ede7e3;
     border: none;
     padding: 8px 16px;
-    text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 14px;
     margin: 4px 2px;
     transition-duration: 0.4s;
-    cursor: pointer;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -62,16 +55,17 @@ menubutton button:hover {
 .side-menu-button button {
     background: #ede7e3;
     color: #1f1f1f;
-    justify-content: center;
-    align-items: center;
-    display: flex;
     border: none;
-    text-align: center;
-    align-content: center;
     box-shadow: none;
 }
+
 .side-menu-button button:hover {
     background: #dcd6d2;
     box-shadow: none;
 }
 
+
+.label-setting {
+    font-size: 14px;
+    margin-left: 10px;
+}

@@ -12,12 +12,9 @@ use gtk4 as gtk;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-/// The private struct, which can hold widgets and other data.
 #[derive(Debug, gtk::CompositeTemplate)]
 #[template(resource = "/org/mpsgu/main_window.ui")]
 pub struct MainWindow {
-    // The #[template_child] attribute tells the CompositeTemplate macro
-    // that a field is meant to be a child within the template.
     #[template_child]
     pub menubar: TemplateChild<FirstMenuBar>,
     #[template_child]
@@ -29,7 +26,6 @@ pub struct MainWindow {
     #[template_child]
     pub drawing_area: TemplateChild<gtk::DrawingArea>,
 
-    //pub settings: RefCell<SettingsModal>,
     pub appl: RefCell<gtk::Application>,
 
     pub pixbuf: RefCell<Pixbuf>,
@@ -59,7 +55,6 @@ impl Default for MainWindow {
             appl: Default::default(),
             drawing_area: Default::default(),
             overlay: Default::default(),
-            //settings: Default::default(),
             pixbuf: RefCell::new(Pixbuf::new(Colorspace::Rgb, true, 8, 10, 10).unwrap()),
             image_offset: RefCell::new(ImageOffset::new()),
             crop_area: RefCell::new(CropArea::new()),
@@ -79,15 +74,11 @@ impl ObjectSubclass for MainWindow {
     type Type = super::MainWindow;
     type ParentType = gtk::ApplicationWindow;
 
-    // Within class_init() you must set the template.
-    // The CompositeTemplate derive macro provides a convenience function
-    // bind_template() to set the template and bind all children at once.
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
         UtilityCallbacks::bind_template_callbacks(klass);
     }
 
-    // You must call `Widget`'s `init_template()` within `instance_init()`.
     fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
         obj.init_template();
     }

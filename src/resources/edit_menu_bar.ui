@@ -47,10 +47,10 @@
         </property>
       <style>
         <class name="button"/>
-        <class name="left-button"/>
+        <!-- <class name="left-button"/> -->
       </style>
       </object>
-    </child>  
+    </child>
 
     <!-- Copy -->
     <child>
@@ -74,10 +74,10 @@
         <property name="action-name">win.copy_screen</property>
       <style>
         <class name="button"/>
-        <class name="right-button"/>
+        <!-- <class name="right-button"/> -->
       </style>
       </object>
-    </child>       
+    </child>
   </template>
 </interface>
 
